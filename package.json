@@ -1,0 +1,23 @@
+{
+  "name": "api-recandec",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/IgnaGarcia/API-RecAnDec.git"
+  },
+  "author": "IgnaGarcia",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/IgnaGarcia/API-RecAnDec/issues"
+  },
+  "homepage": "https://github.com/IgnaGarcia/API-RecAnDec#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.18.1"
+  }
+}
