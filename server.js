@@ -1,18 +1,15 @@
-const express = require("express");
-const bodyParser = require('body-parser');
-const cors = require('cors');
+const mongoose = require('mongoose');
+const app = require('./src/app');
+require('dotenv').config();
 
-const app = express();
-
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
-app.use(cors());
-
-app.get('/', (req, res) => {
-    res.send(`[GET] home`)
-});
-
-
-app.listen(3100, () => {
-    console.log(`Server ON. PORT: ${3000}`)
-})
+//conectarse a bd
+mongoose.Promise = global.Promise;
+console.log(process.env.DB_CONNECT)
+mongoose.connect(`${process.env.DB_CONNECT}/`)
+    .then(() => {
+        console.log("OK - Success to connect to DB");
+        app.listen(process.env.PORT, () => {
+            console.log(`OK - Serves is running in ${process.env.HOST}`);
+        })
+    })
+    .catch(err => console.log("ERR - Error to connect to DB: ",err));
