@@ -4,8 +4,7 @@ require('dotenv').config();
 
 //conectarse a bd
 mongoose.Promise = global.Promise;
-console.log(process.env.DB_CONNECT)
-mongoose.connect(`${process.env.DB_CONNECT}/`)
+mongoose.connect(`${process.env.DB_CONNECT}/collections`)
     .then(() => {
         console.log("OK - Success to connect to DB");
         app.listen(process.env.PORT, () => {

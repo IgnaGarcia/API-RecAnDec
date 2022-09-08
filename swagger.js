@@ -10,13 +10,13 @@ const doc = {
             email: "gnachoxp@gmail.com"
         }
     },
-    servers: [{ url: 'http://localhost:3000' }],
+    servers: [{ url: 'http://localhost:3100' }],
     tags: [{}],
     definitions: [{}]
 }
 
 const output = './doc/swagger.json'
-const endpoints = ['./src/app.js']
+const endpoints = ['./app.js']
 
 console.log(`Generating ${output} of ${endpoints}`)
 swaggerAutogen(output, endpoints, doc).then( () => {

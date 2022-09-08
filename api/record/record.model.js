@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-
 const Schema = mongoose.Schema;
 
 const RecordSchema = Schema({
@@ -8,7 +7,8 @@ const RecordSchema = Schema({
     tags: [ {type: Schema.Types.ObjectId, ref: 'tags'} ],
     wallet: {type: Schema.Types.ObjectId, ref: 'wallets'},
     amount: Number,
-    date: String
+    date: Date,
+    isOut: Boolean
 });
 
 module.exports = mongoose.model("records", RecordSchema);
