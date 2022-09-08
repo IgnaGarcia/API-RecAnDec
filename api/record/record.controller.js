@@ -1,6 +1,7 @@
 const Record = require('./record.model');
 var mongoose = require('mongoose');
 const { verifyAndUpdateLimit } = require('../../utils/limit.utils');
+const { getWithPaging } = require('../../utils/paging.utils');
 
 const post = async(req, res) => {
     console.log("[POST]: record ")
@@ -32,7 +33,8 @@ const post = async(req, res) => {
 
 const get = async(req, res) => {
     console.log("[GET]: records, Body: " + JSON.stringify(req.body))
-   
+    const page = req.query.page ? Number(req.query.page) : 1
+
     let query = { 'owner': req.params.id}
     if(req.body.isOut != undefined) query['isOut'] = req.body.isOut
     if(req.body.dateFrom && req.body.dateUntil) query['date'] =  {
@@ -45,11 +47,12 @@ const get = async(req, res) => {
     console.log(`[QUERY]: ${JSON.stringify(query)}`)
 
     try {
-        const records = await Record.find(query).exec()
-        console.log(`[RECORDS FINDED]: ${records.length}`)
+        const paginatedResponse = await getWithPaging(Record, query, { date: -1 }, page)
+
+        console.log(`[RECORDS FINDED]: ${paginatedResponse.data.length}`)
         res.status(200).json({
             message: "Record finded successfully",
-            data: records
+            ...paginatedResponse
         });
     } catch (err) {
         console.error("[ERROR]" + err)
