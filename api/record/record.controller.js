@@ -63,4 +63,57 @@ const get = async(req, res) => {
     }
 }
 
-module.exports = { post, get }
+const balance = async(req, res) => {
+    /*
+    Path: userId
+    Request:
+        dateFrom: string
+        dateUntil: string
+    Response:
+        message: string
+        code: int
+        data: 
+            balance: int
+            income: int
+            expense: int
+            avgIncome: int
+            avgExpense: int
+            lastIncome: int
+            lastExpense: int
+    */
+}
+
+const summary = async(req, res) => {
+    /*
+    Path: userId
+    Request:
+        groupBy: string
+        filter: [string]
+        dateFrom: string
+        dateUntil: string
+    Response:
+        message: string
+        code: int
+        data: [ {category: string, amount: int} ]
+    */
+}
+
+const historical = async(req, res) => {
+    /*
+    Path: userId
+    Request:
+        groupBy: string
+        filter: [string]
+    Response:
+        message: string
+        code: int
+        data: [ 
+    {
+    element: string, 
+    data:[ {amount: int, period: string} ]
+    } 
+    ]
+    */
+}
+
+module.exports = { post, get, balance, summary, historical }
