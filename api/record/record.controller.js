@@ -2,6 +2,7 @@ const Record = require('./record.model');
 var mongoose = require('mongoose');
 const { verifyAndUpdateLimit } = require('../../utils/limit.utils');
 const { getWithPaging } = require('../../utils/paging.utils');
+const { dateBetween, fieldInGroup } = require('../../utils/query.utils');
 
 const post = async(req, res) => {
     console.log("[POST]: record ")
@@ -37,13 +38,10 @@ const get = async(req, res) => {
 
     let query = { 'owner': req.params.id}
     if(req.body.isOut != undefined) query['isOut'] = req.body.isOut
-    if(req.body.dateFrom && req.body.dateUntil) query['date'] =  {
-        $gte: new Date(req.body.dateFrom), 
-        $lt: new Date(req.body.dateUntil)
-    }
-    if(req.body.categories && req.body.categories.length > 0) query['category'] = { $in: req.body.categories }
-    if(req.body.tags && req.body.tags.length > 0) query['tags'] = { $in: req.body.tags }
-    if(req.body.wallets && req.body.wallets.length > 0) query['wallets'] = { $in: req.body.wallets }
+    query =  dateBetween(query, req.body.dateFrom, req.body.dateUntil)
+    query = fieldInGroup(query, req.body.categories, "category")
+    query = fieldInGroup(query, req.body.tags, "tags")
+    query = fieldInGroup(query, req.body.wallets, "wallet")
     console.log(`[QUERY]: ${JSON.stringify(query)}`)
 
     try {
@@ -64,6 +62,7 @@ const get = async(req, res) => {
 }
 
 const balance = async(req, res) => {
+    // Para balance informativo
     /*
     Path: userId
     Request:
@@ -81,9 +80,18 @@ const balance = async(req, res) => {
             lastIncome: int
             lastExpense: int
     */
+
+    // aggregate outputs in period
+    // aggregate inputs in period
+    // diff between inputs outputs
+    // aggregate outputs
+    // aggregate inputs
+    // aggregate outputs in period - 1
+    // aggregate inputs in period - 1
 }
 
 const summary = async(req, res) => {
+    // Para grafico de tortas
     /*
     Path: userId
     Request:
@@ -94,11 +102,19 @@ const summary = async(req, res) => {
     Response:
         message: string
         code: int
-        data: [ {category: string, amount: int} ]
+        data: [ {label: string, amount: int} ]
     */
+    req.params.id
+    req.body.groupBy
+    req.body.filter
+    req.body.dateFrom
+    req.body.dateUntil
+    // aggregate outputs in period, group by [ wallet | tag | category ] with filter of these elements
+    // return list de estos filtros con su montos
 }
 
 const historical = async(req, res) => {
+    // Para grafico de lineas o barras
     /*
     Path: userId
     Request:
@@ -108,12 +124,18 @@ const historical = async(req, res) => {
         message: string
         code: int
         data: [ 
-    {
-    element: string, 
-    data:[ {amount: int, period: string} ]
-    } 
-    ]
+            {
+                label: string, 
+                data:[ {amount: int, period: string} ]
+            }  
+        ]
     */
+
+    // aggregate by groupBy and with filter
+    // example:
+    // groupBy: category, filter: [Alimentos, Impuestos, BlaBlaBla]
+    // groupBy: isOut, filter: [true, false]
+    // return list de los filtros, que tienen su label y una lista de montos con su periodo
 }
 
 module.exports = { post, get, balance, summary, historical }
