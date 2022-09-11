@@ -2,7 +2,7 @@ const Record = require('./record.model');
 var mongoose = require('mongoose');
 const { verifyAndUpdateLimit } = require('../../utils/limit.utils');
 const { getWithPaging } = require('../../utils/paging.utils');
-const { dateBetween, fieldInGroup } = require('../../utils/query.utils');
+const { dateBetween, fieldInGroup, sumInPeriod } = require('../../utils/query.utils');
 
 const post = async(req, res) => {
     console.log("[POST]: record ")
@@ -92,25 +92,24 @@ const balance = async(req, res) => {
 
 const summary = async(req, res) => {
     // Para grafico de tortas
-    /*
-    Path: userId
-    Request:
-        groupBy: string
-        filter: [string]
-        dateFrom: string
-        dateUntil: string
-    Response:
-        message: string
-        code: int
-        data: [ {label: string, amount: int} ]
-    */
-    req.params.id
-    req.body.groupBy
-    req.body.filter
-    req.body.dateFrom
-    req.body.dateUntil
-    // aggregate outputs in period, group by [ wallet | tag | category ] with filter of these elements
-    // return list de estos filtros con su montos
+   console.log(`[GET SUMMARY]: ${JSON.stringify(req.params)} - ${JSON.stringify(req.query)}`)
+   
+   let query = sumInPeriod(req.params.id, req.params.groupBy, req.query.filter, req.query.dateFrom, req.query.dateUntil)
+   try {
+        const aggregated = await Record.aggregate(query)
+        console.log(`[RECORDS AGGREGATED]: ${req.params.groupBy}[${aggregated.length}]`)
+
+        res.status(200).json({
+            message: "Records Aggregated Succesfully",
+            data: aggregated
+        })
+   } catch (err) {
+        console.error("[ERROR]" + err)
+        res.status(500).json({
+            message: "Internal Server Error on Aggregating",
+            error: err
+        });
+   }
 }
 
 const historical = async(req, res) => {
