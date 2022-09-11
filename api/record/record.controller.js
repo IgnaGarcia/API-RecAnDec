@@ -2,7 +2,7 @@ const Record = require('./record.model');
 var mongoose = require('mongoose');
 const { verifyAndUpdateLimit } = require('../../utils/limit.utils');
 const { getWithPaging } = require('../../utils/paging.utils');
-const { dateBetween, fieldInGroup, sumInPeriod } = require('../../utils/query.utils');
+const { dateBetween, fieldInGroup, sumInPeriod, balanceInPeriod } = require('../../utils/query.utils');
 
 const post = async(req, res) => {
     console.log("[POST]: record ")
@@ -13,7 +13,7 @@ const post = async(req, res) => {
         record.date = new Date().toISOString()
         console.log("[RECORD]: " + record)
 
-        const msg = await verifyAndUpdateLimit(record) 
+        const msg = record.isOut? await verifyAndUpdateLimit(record) : null
 
         try {
             await record.save()
@@ -63,31 +63,27 @@ const get = async(req, res) => {
 
 const balance = async(req, res) => {
     // Para balance informativo
-    /*
-    Path: userId
-    Request:
-        dateFrom: string
-        dateUntil: string
-    Response:
-        message: string
-        code: int
-        data: 
-            balance: int
-            income: int
-            expense: int
-            avgIncome: int
-            avgExpense: int
-            lastIncome: int
-            lastExpense: int
-    */
+    console.log(`[GET BALANCE]: ${JSON.stringify(req.params)} - ${JSON.stringify(req.query)}`)
 
-    // aggregate outputs in period
-    // aggregate inputs in period
-    // diff between inputs outputs
-    // aggregate outputs
-    // aggregate inputs
-    // aggregate outputs in period - 1
-    // aggregate inputs in period - 1
+    let actualQuery = balanceInPeriod(req.params.id, req.query.dateFrom, req.query.dateUntil)
+    let historicalQuery = balanceInPeriod(req.params.id)
+    try {
+        const thisMonths = await Record.aggregate(actualQuery)
+        const historical = await Record.aggregate(historicalQuery)
+        console.log(`[RECORDS AGGREGATED]`)
+
+        thisMonths[2] = historical[0]
+        res.status(200).json({
+            message: "Records Aggregated Succesfully",
+            data: thisMonths
+        })
+    } catch (err) {
+        console.error("[ERROR]" + err)
+        res.status(500).json({
+            message: "Internal Server Error on Aggregating",
+            error: err
+        });
+    }
 }
 
 const summary = async(req, res) => {

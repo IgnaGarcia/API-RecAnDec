@@ -32,7 +32,7 @@ const sumInPeriod = (owner, groupBy, filter, from, until) => {
                     'owner': ObjectId(owner),
                     ...dateBetween({}, from, until), 
                     ...inList,
-                    'isOut': true
+                    isOut: true
                 }
             },
             {
@@ -52,10 +52,39 @@ const sumInPeriod = (owner, groupBy, filter, from, until) => {
                     acum: { $sum: "$amount"},
                     count: { $sum: 1 }
                 }
-            },
+            }
         ]
     }
     return null
 }
 
-module.exports = { dateBetween, fieldInGroup, sumInPeriod }
+const balanceInPeriod = (owner, from, until) => {
+    if(owner) {
+        let id = (from && until)? 
+            { year: { $year: "$date" }, month: { $month: "$date" }}
+            : {}
+        return [
+            {
+                $match: {
+                    'owner': ObjectId(owner),
+                    ...dateBetween({}, from, until)
+                }
+            },
+            {
+                $group: {
+                    _id: id,
+                    income: { $sum: { $cond: ["$isOut", 0, "$amount"] } },
+                    expense: { $sum: { $cond: ["$isOut", "$amount", 0] } },
+                    countIncome: { $sum: { $cond: ["$isOut", 0, 1] } },
+                    countExpense: { $sum: { $cond: ["$isOut", 1, 0] } }
+                }
+            },
+            {
+                $sort: { _id: -1 }
+            }
+        ]
+    }
+    return null
+}
+
+module.exports = { dateBetween, fieldInGroup, sumInPeriod, balanceInPeriod }
