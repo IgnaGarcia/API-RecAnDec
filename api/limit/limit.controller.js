@@ -13,8 +13,8 @@ const post = async(req, res) => {
             year: today.getFullYear(),
             ...req.body })
 
-        let acum = await getAcumOfPeriod(limit.owner, limit.category, limit.month, limit.year)
-        console.log("[LIMIT]: " + limit + " " + acum)
+        limit.acum = await getAcumOfPeriod(limit.owner, limit.category, limit.month, limit.year)
+        console.log("[LIMIT]: " + limit)
   
         try {
             await limit.save()

@@ -61,7 +61,7 @@ const getAcumOfPeriod = (owner, category, month, year) => {
             const records = await Record.aggregate([
                 {
                     $match: {
-                        'owner': ObjectId(owner),
+                        $or: [{ 'owner': owner }, { 'owner': null }],
                         'isOut': true,
                         'category': ObjectId(category)
                     }
@@ -76,8 +76,10 @@ const getAcumOfPeriod = (owner, category, month, year) => {
                     $sort: { _id: -1 }
                 }
             ]).exec()
-            console.log(`[LIMIT STATUS] ${records}`)
-            resolve(records)
+            console.log(`[LIMIT STATUS]: ${JSON.stringify(records[0])}`)
+            if(records || records.length == 0) resolve(0)
+            else if(records[0]._id.month != month && records[0]._id.year != year) resolve(0)
+            else resolve(records[0].acum)
         } catch(e) {
             console.log("[ERROR]" + e)
             reject(e)
