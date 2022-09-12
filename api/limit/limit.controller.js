@@ -36,18 +36,18 @@ const post = async(req, res) => {
 }
 
 const get = async(req, res) => {
-    console.log("[GET]: categories")
+    console.log("[GET]: limits")
     const page = req.query.page ? Number(req.query.page) : 1
 
-    let query = { $or: [{ 'owner': req.params.id }, { 'owner': null }] }
+    let query = { 'owner': req.params.id }
     console.log(`[QUERY]: ${JSON.stringify(query)}`)
 
     try {
-        const paginatedResponse = await getWithPaging(Category, query, { createDate: -1 }, page)
+        const paginatedResponse = await getWithPaging(Limit, query, { year: -1, month: -1 }, page)
 
-        console.log(`[CATEGORIES FINDED]: ${paginatedResponse.data.length}`)
+        console.log(`[LIMITS FINDED]: ${paginatedResponse.data.length}`)
         res.status(200).json({
-            message: "Categories finded successfully",
+            message: "Limits finded successfully",
             ...paginatedResponse
         });
     } catch (err) {
