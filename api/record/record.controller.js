@@ -2,6 +2,8 @@ const Record = require('./record.model');
 var mongoose = require('mongoose');
 const { verifyAndUpdateLimit } = require('../../utils/limit.utils');
 const { getWithPaging } = require('../../utils/paging.utils');
+const { dateBetween, fieldInGroup, sumInPeriod, balanceInPeriod, calcHistorical } = require('../../utils/query.utils');
+const e = require('express');
 
 const post = async(req, res) => {
     console.log("[POST]: record ")
@@ -12,7 +14,7 @@ const post = async(req, res) => {
         record.date = new Date().toISOString()
         console.log("[RECORD]: " + record)
 
-        const msg = await verifyAndUpdateLimit(record) 
+        const msg = record.isOut? await verifyAndUpdateLimit(record) : null
 
         try {
             await record.save()
@@ -37,13 +39,10 @@ const get = async(req, res) => {
 
     let query = { 'owner': req.params.id}
     if(req.body.isOut != undefined) query['isOut'] = req.body.isOut
-    if(req.body.dateFrom && req.body.dateUntil) query['date'] =  {
-        $gte: new Date(req.body.dateFrom), 
-        $lt: new Date(req.body.dateUntil)
-    }
-    if(req.body.categories && req.body.categories.length > 0) query['category'] = { $in: req.body.categories }
-    if(req.body.tags && req.body.tags.length > 0) query['tags'] = { $in: req.body.tags }
-    if(req.body.wallets && req.body.wallets.length > 0) query['wallets'] = { $in: req.body.wallets }
+    query =  dateBetween(query, req.body.dateFrom, req.body.dateUntil)
+    query = fieldInGroup(query, req.body.categories, "category")
+    query = fieldInGroup(query, req.body.tags, "tags")
+    query = fieldInGroup(query, req.body.wallets, "wallet")
     console.log(`[QUERY]: ${JSON.stringify(query)}`)
 
     try {
@@ -64,56 +63,101 @@ const get = async(req, res) => {
 }
 
 const balance = async(req, res) => {
-    /*
-    Path: userId
-    Request:
-        dateFrom: string
-        dateUntil: string
-    Response:
-        message: string
-        code: int
-        data: 
-            balance: int
-            income: int
-            expense: int
-            avgIncome: int
-            avgExpense: int
-            lastIncome: int
-            lastExpense: int
-    */
+    // Para balance informativo
+    console.log(`[GET BALANCE]: ${JSON.stringify(req.params)} - ${JSON.stringify(req.query)}`)
+
+    let actualQuery = balanceInPeriod(req.params.id, req.query.dateFrom, req.query.dateUntil)
+    let historicalQuery = balanceInPeriod(req.params.id)
+    try {
+        const thisMonths = await Record.aggregate(actualQuery)
+        const historical = await Record.aggregate(historicalQuery)
+        console.log(`[RECORDS AGGREGATED]`)
+
+        thisMonths[2] = historical[0]
+        res.status(200).json({
+            message: "Records Aggregated Succesfully",
+            data: thisMonths
+        })
+    } catch (err) {
+        console.error("[ERROR]" + err)
+        res.status(500).json({
+            message: "Internal Server Error on Aggregating",
+            error: err
+        });
+    }
 }
 
 const summary = async(req, res) => {
-    /*
-    Path: userId
-    Request:
-        groupBy: string
-        filter: [string]
-        dateFrom: string
-        dateUntil: string
-    Response:
-        message: string
-        code: int
-        data: [ {category: string, amount: int} ]
-    */
+    // Para grafico de tortas
+   console.log(`[GET SUMMARY]: ${JSON.stringify(req.params)} - ${JSON.stringify(req.query)}`)
+   
+   let query = sumInPeriod(req.params.id, req.params.groupBy, req.query.filter, req.query.dateFrom, req.query.dateUntil)
+   try {
+        const aggregated = await Record.aggregate(query)
+        console.log(`[RECORDS AGGREGATED]: ${req.params.groupBy}[${aggregated.length}]`)
+
+        res.status(200).json({
+            message: "Records Aggregated Succesfully",
+            data: aggregated
+        })
+   } catch (err) {
+        console.error("[ERROR]" + err)
+        res.status(500).json({
+            message: "Internal Server Error on Aggregating",
+            error: err
+        });
+   }
 }
 
 const historical = async(req, res) => {
-    /*
-    Path: userId
-    Request:
-        groupBy: string
-        filter: [string]
-    Response:
+    // Para grafico de lineas o barras
+    /* Response:
         message: string
         code: int
         data: [ 
-    {
-    element: string, 
-    data:[ {amount: int, period: string} ]
-    } 
-    ]
+            {
+                label: string, 
+                data:[ {amount: int, period: string} ]
+            }  
+        ]
     */
+        console.log(`[GET HISTORICAL]: ${JSON.stringify(req.params)} - ${JSON.stringify(req.query)}`)
+   
+        let elToObj = (el) => {
+            return {
+                month: el._id.month,
+                year: el._id.year,
+                acum: el.acum,
+                count: el.count
+            }
+        }
+
+        let query = calcHistorical(req.params.id, req.params.groupBy, req.query.dateFrom, req.query.dateUntil)
+        try {
+             const aggregated = await Record.aggregate(query)
+             const response = {}
+             aggregated.forEach( el => {
+                if(response[el._id.label]) response[el._id.label].push(elToObj(el)) 
+                else response[el._id.label] = [elToObj(el)]
+             })
+             console.log(`[RECORDS AGGREGATED]: ${req.params.groupBy}[${Object.keys(response)}]`)
+     
+             res.status(200).json({
+                 message: "Records Aggregated Succesfully",
+                 data: response
+             })
+        } catch (err) {
+             console.error("[ERROR]" + err)
+             res.status(500).json({
+                 message: "Internal Server Error on Aggregating",
+                 error: err
+             });
+        }
+    // aggregate by groupBy and with filter
+    // example:
+    // groupBy: category, filter: [Alimentos, Impuestos, BlaBlaBla]
+    // groupBy: isOut, filter: [true, false]
+    // return list de los filtros, que tienen su label y una lista de montos con su periodo
 }
 
 module.exports = { post, get, balance, summary, historical }
