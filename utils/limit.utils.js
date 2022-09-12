@@ -1,5 +1,7 @@
 const Limit = require('../api/limit/limit.model');
 const Record = require('../api/record/record.model');
+const ObjectId = require("mongoose").Types.ObjectId;
+
 
 const verifyAndUpdateLimit = (rec) => {
     console.log("[VERIFY LIMIT]")
@@ -52,5 +54,36 @@ const verifyAndUpdateLimit = (rec) => {
     });
 }
 
+const getAcumOfPeriod = (owner, category, month, year) => {
+    console.log("[GETTING ACUM]")
+    return new Promise(async(resolve, reject) => {
+        try{
+            const records = await Record.aggregate([
+                {
+                    $match: {
+                        'owner': ObjectId(owner),
+                        'isOut': true,
+                        'category': ObjectId(category)
+                    }
+                },
+                {
+                    $group: {
+                        _id: { year: { $year: "$date" }, month: { $month: "$date" } },
+                        acum: { $sum: "$amount" }
+                    }
+                },
+                {
+                    $sort: { _id: -1 }
+                }
+            ]).exec()
+            console.log(`[LIMIT STATUS] ${records}`)
+            resolve(records)
+        } catch(e) {
+            console.log("[ERROR]" + e)
+            reject(e)
+        }
+    })
+}
 
-module.exports = { verifyAndUpdateLimit }
+
+module.exports = { verifyAndUpdateLimit, getAcumOfPeriod }
