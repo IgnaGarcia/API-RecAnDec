@@ -2,7 +2,8 @@ const Record = require('./record.model');
 var mongoose = require('mongoose');
 const { verifyAndUpdateLimit } = require('../../utils/limit.utils');
 const { getWithPaging } = require('../../utils/paging.utils');
-const { dateBetween, fieldInGroup, sumInPeriod, balanceInPeriod } = require('../../utils/query.utils');
+const { dateBetween, fieldInGroup, sumInPeriod, balanceInPeriod, calcHistorical } = require('../../utils/query.utils');
+const e = require('express');
 
 const post = async(req, res) => {
     console.log("[POST]: record ")
@@ -110,12 +111,7 @@ const summary = async(req, res) => {
 
 const historical = async(req, res) => {
     // Para grafico de lineas o barras
-    /*
-    Path: userId
-    Request:
-        groupBy: string
-        filter: [string]
-    Response:
+    /* Response:
         message: string
         code: int
         data: [ 
@@ -125,7 +121,38 @@ const historical = async(req, res) => {
             }  
         ]
     */
+        console.log(`[GET HISTORICAL]: ${JSON.stringify(req.params)} - ${JSON.stringify(req.query)}`)
+   
+        let elToObj = (el) => {
+            return {
+                month: el._id.month,
+                year: el._id.year,
+                acum: el.acum,
+                count: el.count
+            }
+        }
 
+        let query = calcHistorical(req.params.id, req.params.groupBy, req.query.dateFrom, req.query.dateUntil)
+        try {
+             const aggregated = await Record.aggregate(query)
+             const response = {}
+             aggregated.forEach( el => {
+                if(response[el._id.label]) response[el._id.label].push(elToObj(el)) 
+                else response[el._id.label] = [elToObj(el)]
+             })
+             console.log(`[RECORDS AGGREGATED]: ${req.params.groupBy}[${Object.keys(response)}]`)
+     
+             res.status(200).json({
+                 message: "Records Aggregated Succesfully",
+                 data: response
+             })
+        } catch (err) {
+             console.error("[ERROR]" + err)
+             res.status(500).json({
+                 message: "Internal Server Error on Aggregating",
+                 error: err
+             });
+        }
     // aggregate by groupBy and with filter
     // example:
     // groupBy: category, filter: [Alimentos, Impuestos, BlaBlaBla]

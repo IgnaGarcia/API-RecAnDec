@@ -61,7 +61,7 @@ const sumInPeriod = (owner, groupBy, filter, from, until) => {
 const balanceInPeriod = (owner, from, until) => {
     if(owner) {
         let id = (from && until)? 
-            { year: { $year: "$date" }, month: { $month: "$date" }}
+            { year: { $year: "$date" }, month: { $month: "$date" } }
             : {}
         return [
             {
@@ -87,4 +87,61 @@ const balanceInPeriod = (owner, from, until) => {
     return null
 }
 
-module.exports = { dateBetween, fieldInGroup, sumInPeriod, balanceInPeriod }
+const calcHistorical = (owner, groupBy, filter) => {
+    if(owner && groupBy) {
+
+        let fromCollection = 
+            groupBy == 'category'? 'categories' :
+            groupBy == 'wallet'? 'wallets': 
+            groupBy == 'tags'? 'tags': null
+
+        let query = fromCollection? [
+            {
+                $lookup: {
+                    from: fromCollection,
+                    localField: groupBy,
+                    foreignField: "_id",
+                    as: groupBy
+                }
+            },{ $unwind: `$${groupBy}` },{
+                $group: {
+                    _id: { 
+                        key: `$${groupBy}._id`, 
+                        label: `$${groupBy}.label`, 
+                        year: { $year: "$date" }, 
+                        month: { $month: "$date" } 
+                    },
+                    acum: { $sum: "$amount"},
+                    count: { $sum: 1 }
+                }
+            }
+        ] : [{
+            $group: {
+                _id: { 
+                    key: `isOut`, 
+                    label: `$${groupBy}`, 
+                    year: { $year: "$date" }, 
+                    month: { $month: "$date" } 
+                },
+                acum: { $sum: "$amount"},
+                count: { $sum: 1 }
+            }
+        }]
+
+        let inList = (filter && filter.length > 0)? 
+            fieldInGroup({}, toArray(filter), groupBy) 
+            : ""
+
+        return [
+            {
+                $match: {
+                    'owner': ObjectId(owner),
+                    ...inList
+                }
+            }
+        ].concat(query)
+    }
+    return null
+}
+
+module.exports = { dateBetween, fieldInGroup, sumInPeriod, balanceInPeriod, calcHistorical }
