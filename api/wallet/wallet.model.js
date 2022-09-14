@@ -6,7 +6,8 @@ const WalletSchema = Schema({
     owner: {type: Schema.Types.ObjectId, ref: 'users'},
     label: String,
     acum: Number,
-    alias: String
+    alias: String,
+    createDate: Date
 });
 
 WalletSchema.index( { owner: 1, label: 1}, { unique: true } )
