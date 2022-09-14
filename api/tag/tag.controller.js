@@ -37,7 +37,7 @@ const get = async(req, res) => {
     console.log(`[QUERY]: ${JSON.stringify(query)}`)
 
     try {
-        const paginatedResponse = await getWithPaging(Tag, query, { year: -1, month: -1 }, page)
+        const paginatedResponse = await getWithPaging(Tag, query, { createDate: -1 }, page)
 
         console.log(`[TAGS FINDED]: ${paginatedResponse.data.length}`)
         res.status(200).json({

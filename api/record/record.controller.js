@@ -5,7 +5,7 @@ const { getWithPaging } = require('../../utils/paging.utils');
 
 const post = async(req, res) => {
     console.log("[POST]: record ")
-
+    // TODO acum in Wallet
     if(req.body && req.body.amount && req.body.category) {
         console.log("[BODY]: " + JSON.stringify(req.body) + "; [ID]: " + req.params.id)
         let record = new Record({ owner: req.params.id, ...req.body })
