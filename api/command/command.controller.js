@@ -1,6 +1,9 @@
 const Command = require('./command.model');
 
-
+// TODO: servicios de comandos
+// TODO: servicios de auth
+// TODO: put de record
+// TODO: telegram services
 const post = async(req, res) => {
     console.log("[POST]: command ")
     if(req.params.id && req.body) {

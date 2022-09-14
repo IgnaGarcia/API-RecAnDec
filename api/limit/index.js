@@ -4,5 +4,6 @@ const limitController = require('./limit.controller');
 router.post('/:id/limit', limitController.post);
 router.get('/:id/limit', limitController.get);
 router.put('/:id/limit/:limit', limitController.update);
+router.delete('/:id/limit/:limit', limitController.erase);
 
 module.exports = router;

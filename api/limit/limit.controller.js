@@ -92,4 +92,23 @@ const update = async(req, res) => {
     } else return res.status(400).json({ message: "Fields required are null" })
 }
 
-module.exports = { post, get, update }
+const erase = async(req, res) => {
+    console.log("[DELETE]: limit")
+    if(req.params.id && req.params.limit) {
+        try {
+            await Limit.findByIdAndDelete(req.params.limit);
+            res.status(200).json({
+                message: "Limits deleted successfully",
+                data: req.params.limit
+            });
+        } catch (e) {
+            console.error("[ERROR]: " + err)
+            res.status(500).json({
+                message: "Internal Server Error on Deleting",
+                error: err
+            });
+        }
+    } else return res.status(400).json({ message: "Fields required are null" })
+}
+
+module.exports = { post, get, update, erase }
