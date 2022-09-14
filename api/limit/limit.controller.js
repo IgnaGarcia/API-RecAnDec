@@ -9,7 +9,7 @@ const post = async(req, res) => {
         console.log("[BODY]: " + JSON.stringify(req.body) + "; [ID]: " + req.params.id)
         let today = new Date()
         let limit = new Limit({ owner: req.params.id, 
-            month: today.getMonth(),
+            month: today.getMonth()+1,
             year: today.getFullYear(),
             ...req.body })
 
@@ -59,4 +59,37 @@ const get = async(req, res) => {
     }
 }
 
-module.exports = { post, get }
+const update = async(req, res) => {
+    console.log("[PUT]: limit")
+    if(req.params.id && req.params.limit && req.body.amount) {
+        try {
+            let limit = await Limit.findById(req.params.limit);
+            console.log("[LIMIT]: " + limit)
+
+            limit.amount = req.body.amount
+            let today = new Date()
+            if(limit.month != today.getMonth()+1){
+                limit.month = today.getMonth()+1
+                limit.acum = 0
+            }
+            if(limit.year != today.getFullYear()){
+                limit.year = today.getFullYear()
+                limit.acum = 0
+            }
+            console.log("[NEW LIMIT]: " + limit)
+            await limit.save()
+            res.status(200).json({
+                message: "Limits updated successfully",
+                data: limit
+            });
+        } catch (e) {
+            console.error("[ERROR]: " + err)
+            res.status(500).json({
+                message: "Internal Server Error on Updating",
+                error: err
+            });
+        }
+    } else return res.status(400).json({ message: "Fields required are null" })
+}
+
+module.exports = { post, get, update }
