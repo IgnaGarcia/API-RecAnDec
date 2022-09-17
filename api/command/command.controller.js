@@ -1,25 +1,40 @@
 const Command = require('./command.model');
 
-// TODO: servicios de comandos
-// TODO: servicios de auth
-// TODO: put de record
-// TODO: telegram services
+// TODO servicios de auth
+// TODO put de record
+// TODO telegram services
 const post = async(req, res) => {
     console.log("[POST]: command ")
-    if(req.params.id && req.body) {
-    /*
-    Path: userId
-    Request:
-        expense: bool
-    category: string
-    tags: [string]
-    wallet: string
-    Response:
-        message: string
-        code: int
-        data: string
 
-    */
+    if(req.params.id && req.body && req.body.expense != undefined) {
+        console.log("[BODY]: " + JSON.stringify(req.body) + "; ID: " + req.params.id)
+
+        let command = await Command.findOne({owner: req.params.id, expense: req.body.expense})
+        if(command != null) {
+            console.log("Command exists, updating...")
+            command.category = req.body.category !== undefined? req.body.category : command.category
+            command.wallet = req.body.wallet !== undefined? req.body.wallet : command.wallet
+            command.tags = req.body.tags !== undefined? req.body.tags : command.tags 
+        } else {
+            command = new Command({ owner: req.params.id, ...req.body})
+        }
+        console.log("[COMMAND]: " + command)
+
+        try {
+            await command.save()
+            console.log("[COMMAND CREATED/UPDATED]: " + command)
+            res.status(201).json({
+                message: "Command created/updated successfully",
+                data: command
+            });
+        } catch(err) {
+            console.log("[ERROR]: " + err)
+            res.status(500).json({
+                message: "Internal Server Error on Saving",
+                code: err.code,
+                error: err
+            });
+        }
     } else return res.status(400).json({ message: "Fields  required are null"})
 }
 
@@ -37,22 +52,6 @@ const get = async(req, res) => {
     */
 }
 
-const update = async(req, res) => {
-    console.log("[PUT]: command")
-    /*
-    Path: userId
-    Request:
-        expense: bool
-    category: string
-    tags: [string]
-    wallet: string
-    Response:
-        message: string
-        code: int
-    	data: string
-    */
-}
-
 const erase = async(req, res) => {
     console.log("[DELETE]: command")
     /*
@@ -66,4 +65,4 @@ const erase = async(req, res) => {
     */
 }
 
-module.exports = { post, get, update, erase }
+module.exports = { post, get, erase }
