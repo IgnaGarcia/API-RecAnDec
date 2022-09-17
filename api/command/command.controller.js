@@ -61,15 +61,21 @@ const get = async(req, res) => {
 
 const erase = async(req, res) => {
     console.log("[DELETE]: command")
-    /*
-    Path: userId
-    Request:
-        expense: bool
-    Response:
-        message: string
-        code: int
-        data: string
-    */
+    if(req.params.id && req.params.command) {
+        try {
+            await Command.findByIdAndDelete(req.params.command);
+            res.status(200).json({
+                message: "Command deleted successfully",
+                data: req.params.command
+            });
+        } catch (e) {
+            console.error("[ERROR]: " + err)
+            res.status(500).json({
+                message: "Internal Server Error on Deleting",
+                error: err
+            });
+        }
+    } else return res.status(400).json({ message: "Fields required are null"})
 }
 
 module.exports = { post, get, erase }
