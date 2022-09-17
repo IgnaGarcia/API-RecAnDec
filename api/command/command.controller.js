@@ -40,16 +40,23 @@ const post = async(req, res) => {
 
 const get = async(req, res) => {
     console.log("[GET]: command")
-    /*
-    Path: userId
-    Request:
-    Response:
-        message: string
-        code: int
-        data: 
-            expenseCommand: Command
-            incomeCommand: Command
-    */
+    let query = { 'owner': req.params.id }
+    console.log(`[QUERY]: ${JSON.stringify(query)}`)
+
+    try {
+        let response = await Command.find(query)
+        console.log(`[COMMANDS FINDED]: ${response.length}`)
+        res.status(200).json({
+            message: "Commands finded successfully",
+            data: response
+        });
+    } catch (err) {
+        console.error("[ERROR]: " + err)
+        res.status(500).json({
+            message: "Internal Server Error on Finding",
+            error: err
+        });
+    }
 }
 
 const erase = async(req, res) => {
