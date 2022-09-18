@@ -7,6 +7,7 @@ const tagRoutes = require('./tag/index');
 const walletRoutes = require('./wallet/index');
 const telegramRoutes = require('./telegram/index');
 
+// TODO servicios de auth
 const app = express();
 
 app.use('/user', recordRoutes);

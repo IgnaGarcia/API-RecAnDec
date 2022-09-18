@@ -1,9 +1,8 @@
 const Record = require('./record.model');
-var mongoose = require('mongoose');
 const { verifyAndUpdateLimit } = require('../../utils/limit.utils');
 const { getWithPaging } = require('../../utils/paging.utils');
 const { dateBetween, fieldInGroup, sumInPeriod, balanceInPeriod, calcHistorical } = require('../../utils/query.utils');
-const e = require('express');
+// TODO put de record
 
 const post = async(req, res) => {
     console.log("[POST]: record ")
@@ -111,53 +110,38 @@ const summary = async(req, res) => {
 
 const historical = async(req, res) => {
     // Para grafico de lineas o barras
-    /* Response:
-        message: string
-        code: int
-        data: [ 
-            {
-                label: string, 
-                data:[ {amount: int, period: string} ]
-            }  
-        ]
-    */
-        console.log(`[GET HISTORICAL]: ${JSON.stringify(req.params)} - ${JSON.stringify(req.query)}`)
-   
-        let elToObj = (el) => {
-            return {
-                month: el._id.month,
-                year: el._id.year,
-                acum: el.acum,
-                count: el.count
-            }
-        }
+    console.log(`[GET HISTORICAL]: ${JSON.stringify(req.params)} - ${JSON.stringify(req.query)}`)
 
-        let query = calcHistorical(req.params.id, req.params.groupBy, req.query.dateFrom, req.query.dateUntil)
-        try {
-             const aggregated = await Record.aggregate(query)
-             const response = {}
-             aggregated.forEach( el => {
-                if(response[el._id.label]) response[el._id.label].push(elToObj(el)) 
-                else response[el._id.label] = [elToObj(el)]
-             })
-             console.log(`[RECORDS AGGREGATED]: ${req.params.groupBy}[${Object.keys(response)}]`)
-     
-             res.status(200).json({
-                 message: "Records Aggregated Succesfully",
-                 data: response
-             })
-        } catch (err) {
-             console.error("[ERROR]" + err)
-             res.status(500).json({
-                 message: "Internal Server Error on Aggregating",
-                 error: err
-             });
+    let elToObj = (el) => {
+        return {
+            month: el._id.month,
+            year: el._id.year,
+            acum: el.acum,
+            count: el.count
         }
-    // aggregate by groupBy and with filter
-    // example:
-    // groupBy: category, filter: [Alimentos, Impuestos, BlaBlaBla]
-    // groupBy: isOut, filter: [true, false]
-    // return list de los filtros, que tienen su label y una lista de montos con su periodo
+    }
+
+    let query = calcHistorical(req.params.id, req.params.groupBy, req.query.dateFrom, req.query.dateUntil)
+    try {
+            const aggregated = await Record.aggregate(query)
+            const response = {}
+            aggregated.forEach( el => {
+            if(response[el._id.label]) response[el._id.label].push(elToObj(el)) 
+            else response[el._id.label] = [elToObj(el)]
+            })
+            console.log(`[RECORDS AGGREGATED]: ${req.params.groupBy}[${Object.keys(response)}]`)
+    
+            res.status(200).json({
+                message: "Records Aggregated Succesfully",
+                data: response
+            })
+    } catch (err) {
+            console.error("[ERROR]" + err)
+            res.status(500).json({
+                message: "Internal Server Error on Aggregating",
+                error: err
+            });
+    }
 }
 
 module.exports = { post, get, balance, summary, historical }

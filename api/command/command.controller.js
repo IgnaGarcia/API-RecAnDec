@@ -1,7 +1,5 @@
 const Command = require('./command.model');
 
-// TODO servicios de auth
-// TODO put de record
 const post = async(req, res) => {
     console.log("[POST]: command ")
 

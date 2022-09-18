@@ -90,7 +90,7 @@
         }
       }
     },
-    "/user/{id}/balance": {
+    "/user/{id}/record/balance": {
       "get": {
         "description": "",
         "parameters": [
@@ -101,12 +101,33 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "dateFrom",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "dateUntil",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
-        "responses": {}
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
       }
     },
-    "/user/{id}/record/summary": {
+    "/user/{id}/record/summary/{groupBy}": {
       "get": {
         "description": "",
         "parameters": [
@@ -117,12 +138,48 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "groupBy",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "filter",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "dateFrom",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "dateUntil",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
-        "responses": {}
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
       }
     },
-    "/user/{id}/record/historical": {
+    "/user/{id}/record/historical/{groupBy}": {
       "get": {
         "description": "",
         "parameters": [
@@ -133,9 +190,38 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "groupBy",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "dateFrom",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "dateUntil",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
-        "responses": {}
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
       }
     },
     "/user/{id}/category": {
@@ -374,8 +460,37 @@
           }
         ],
         "responses": {
+          "201": {
+            "description": "Created"
+          },
           "400": {
             "description": "Bad Request"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "expense": {
+                    "example": "any"
+                  },
+                  "category": {
+                    "example": "any"
+                  },
+                  "wallet": {
+                    "example": "any"
+                  },
+                  "tags": {
+                    "example": "any"
+                  }
+                }
+              }
+            }
           }
         }
       },
@@ -391,32 +506,17 @@
             }
           }
         ],
-        "responses": {}
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
       }
     },
     "/user/{id}/command/{command}": {
-      "put": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "command",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {}
-      },
       "delete": {
         "description": "",
         "parameters": [
@@ -437,7 +537,17 @@
             }
           }
         ],
-        "responses": {}
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
       }
     },
     "/user/{id}/tag": {
@@ -583,6 +693,97 @@
             "description": "Internal Server Error"
           }
         }
+      }
+    },
+    "/telegram/{telegramId}": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "telegramId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "example": "any"
+                  },
+                  "securityCode": {
+                    "example": "any"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/telegram/{telegramId}/wallets": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "telegramId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/telegram/{telegramId}/categories": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "telegramId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/telegram/{telegramId}/tags": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "telegramId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {}
       }
     }
   },
