@@ -1,15 +1,16 @@
 const Command = require('./command.model');
+const log = require('../../utils/log.utils')
 const { find, create, remove } = require('../../utils/mongoose.utils')
 
 const post = async(req, res) => {
-    console.log("[POST]: command ")
+    log.post("command")
 
     if(req.params.id && req.body && req.body.expense != undefined) {
-        console.log("[BODY]: " + JSON.stringify(req.body) + "; ID: " + req.params.id)
+        log.content(req.body, req.params.id)
 
         let command = await Command.findOne({owner: req.params.id, expense: req.body.expense})
         if(command != null) {
-            console.log("Command exists, updating...")
+            log.debug("COMMAND", "updating...")
             command.category = req.body.category !== undefined? req.body.category : command.category
             command.wallet = req.body.wallet !== undefined? req.body.wallet : command.wallet
             command.tags = req.body.tags !== undefined? req.body.tags : command.tags 
@@ -22,13 +23,13 @@ const post = async(req, res) => {
 }
 
 const get = async(req, res) => {
-    console.log("[GET]: command")
+    log.get("command")
     let query = { $or: [{'owner': req.params.id}, {'telegramId': req.params.id}] }
     await find(res, Command, query, "Commands")
 }
 
 const erase = async(req, res) => {
-    console.log("[DELETE]: command")
+    log.delete("command")
     if(req.params.id && req.params.command) {
         await remove(res, Command, req.params.command, "Command")
     } else return res.status(400).json({ message: "Fields required are null"})

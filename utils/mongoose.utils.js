@@ -1,10 +1,11 @@
 const { getWithPaging } = require("./paging.utils");
+const log = require('./log.utils')
 
 const create = async(res, instance, modelName) => {
-    console.log(`[${modelName.toUpperCase()}]: ${instance}`)
+    log.debug(modelName.toUpperCase(), instance)
     try {
         await instance.save()
-        console.log(`[${modelName.toUpperCase()} CREATED]: ${instance}`)
+        log.debug("CREATED", instance)
 
         return res.status(201).json({
             message: `${modelName} created successfully`,
@@ -12,7 +13,7 @@ const create = async(res, instance, modelName) => {
         });
     } catch(err) {
         let message = (err.code == 11000) ? "Duplicate Key Error" : "Internal Server Error on Saving"
-        console.log("[ERROR]: " + err)
+        log.error(err)
 
         return res.status(500).json({
             message,
@@ -23,19 +24,19 @@ const create = async(res, instance, modelName) => {
 }
 
 const find = async(res, Model, query, modelName) => {
-    console.log(`[QUERY]: ${JSON.stringify(query)}`)
+    log.query(query)
 
     try {
         const response = await Model.find(query)
 
-        console.log(`[${modelName.toUpperCase()} FINDED]: ${response.length}`)
+        log.debug("FINDED", response.length)
         return res.status(200).json({
             message: `${modelName} finded successfully`,
             data: response
         });
 
     } catch (err) {
-        console.error("[ERROR]: " + err)
+        log.error(err)
 
         return res.status(500).json({
             message: "Internal Server Error on Finding",
@@ -46,19 +47,19 @@ const find = async(res, Model, query, modelName) => {
 }
 
 const findWithPaging = async(res, Model, query, modelName, order, page=1, size=20) => {
-    console.log(`[QUERY]: ${JSON.stringify(query)}`)
+    log.query(query)
     
     try {
-        const paginatedResponse = await getWithPaging(Model, query, order, page, size)
+        const response = await getWithPaging(Model, query, order, page, size)
 
-        console.log(`[${modelName.toUpperCase()} FINDED]: ${paginatedResponse.data.length}`)
+        log.debug("FINDED", response.data.length)
         return res.status(200).json({
             message: `${modelName} finded successfully`,
-            ...paginatedResponse
+            ...response
         });
         
     } catch (err) {
-        console.error("[ERROR]: " + err)
+        log.error(err)
 
         return res.status(500).json({
             message: "Internal Server Error on Finding",
@@ -77,7 +78,7 @@ const remove = async(res, Model, id, modelName) => {
         });
 
     } catch (e) {
-        console.error("[ERROR]: " + err)
+        log.error(err)
 
         res.status(500).json({
             message: "Internal Server Error on Deleting",

@@ -1,11 +1,12 @@
 const Wallet = require('./wallet.model');
+const log = require('../../utils/log.utils')
 const { create, findWithPaging } = require('../../utils/mongoose.utils');
 
 const post = async(req, res) => {
-    console.log("[POST]: wallet ")
+    log.post("wallet")
 
     if(req.body && req.body.label && req.body.alias && req.body.acum) {
-        console.log("[BODY]: " + JSON.stringify(req.body) + "; [ID]: " + req.params.id)
+        log.content(req.body, req.params.id)
         let wallet = new Wallet({ owner: req.params.id, ...req.body })
 
         await create(res, wallet, "Wallet")
@@ -13,7 +14,7 @@ const post = async(req, res) => {
 }
 
 const get = async(req, res) => {
-    console.log("[GET]: wallets")
+    log.get("wallets")
     const page = req.query.page ? Number(req.query.page) : 1
 
     let query = { 'owner': req.params.id }

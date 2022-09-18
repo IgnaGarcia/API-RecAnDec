@@ -2,15 +2,17 @@ const Category = require('../category/category.model');
 const Wallet = require('../wallet/wallet.model');
 const Tag = require('../tag/tag.model');
 const User = require("../user/user.model");
+const log = require('../../utils/log.utils')
 const { getListOf } = require("../../utils/telegram.utils");
 
 const sync = async(req, res) => {
     if(req.params.telegramId && req.body && req.body.email && req.body.securityCode) {
-        console.log("[SYNC TELEGRAM]: " + JSON.stringify(req.body) + "; TG-ID: " + req.params.telegramId)
+        log.debug("SYNC TELEGRAM", req.params.telegramId)
+        log.content(req.body, req.params.telegramId)
 
         let user = await User.findOne({ "telegramId": req.body.securityCode, "email": req.body.email })
         if(user) {
-            console.log("[USER FINDED]: " + JSON.stringify(user))
+            log.debug("USER FINDED", JSON.stringify(user))
             user.telegramId = req.params.telegramId
             await user.save()
             return res.status(200).json({

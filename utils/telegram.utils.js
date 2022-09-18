@@ -1,4 +1,5 @@
 const User = require("../api/user/user.model");
+const log = require('./log.utils')
 const { find } = require("./mongoose.utils");
 
 const getUserFromTgId = async(telegramId) => {
@@ -7,11 +8,11 @@ const getUserFromTgId = async(telegramId) => {
 }
 
 const getListOf = async(res, Model, telegramId, modelName) => {
-    console.log(`[GET]: ${modelName} from telegram`)
+    log.get(`${modelName} from Telegram`)
     
     let owner = await getUserFromTgId(telegramId)
     if(!owner){
-        console.log("User not found")
+        log.error({code: 404, message: "User not found"})
         return res.status(404).json({
             message: "Owner not found"
         });

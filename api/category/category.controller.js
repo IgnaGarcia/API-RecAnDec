@@ -1,11 +1,12 @@
 const Category = require('./category.model');
+const log = require('../../utils/log.utils')
 const { findWithPaging, create } = require('../../utils/mongoose.utils');
 
 const post = async(req, res) => {
-    console.log("[POST]: category ")
+    log.post("category")
 
     if(req.body && req.body.label && req.body.alias) {
-        console.log("[BODY]: " + JSON.stringify(req.body) + "; [ID]: " + req.params.id)
+        log.content(req.body, req.params.id)
         let category = new Category({ owner: req.params.id, ...req.body })
         
         await create(res, category, "Category")
@@ -13,7 +14,7 @@ const post = async(req, res) => {
 }
 
 const get = async(req, res) => {
-    console.log("[GET]: categories")
+    log.get("category")
     const page = req.query.page ? Number(req.query.page) : 1
 
     let query = { $or: [{ 'owner': req.params.id }, { 'owner': null }] }

@@ -1,12 +1,13 @@
 const Limit = require('./limit.model');
+const log = require('../../utils/log.utils')
 const { getAcumOfPeriod } = require('../../utils/limit.utils');
 const { findWithPaging, create, remove } = require('../../utils/mongoose.utils');
 
 const post = async(req, res) => {
-    console.log("[POST]: limit ")
+    log.post("limit")
 
     if(req.body && req.body.category && req.body.amount) {
-        console.log("[BODY]: " + JSON.stringify(req.body) + "; [ID]: " + req.params.id)
+        log.content(req.body, req.params.id)
         let today = new Date()
         let limit = new Limit({ owner: req.params.id, 
             month: today.getMonth()+1,
@@ -19,7 +20,7 @@ const post = async(req, res) => {
 }
 
 const get = async(req, res) => {
-    console.log("[GET]: limits")
+    log.get("limits")
     const page = req.query.page ? Number(req.query.page) : 1
 
     let query = { 'owner': req.params.id }
@@ -27,11 +28,11 @@ const get = async(req, res) => {
 }
 
 const update = async(req, res) => {
-    console.log("[PUT]: limit")
+    log.put("limit")
     if(req.params.id && req.params.limit && req.body.amount) {
         try {
             let limit = await Limit.findById(req.params.limit);
-            console.log("[LIMIT]: " + limit)
+            log.debug("LIMIT", limit)
 
             limit.amount = req.body.amount
             let today = new Date()
@@ -43,14 +44,14 @@ const update = async(req, res) => {
                 limit.year = today.getFullYear()
                 limit.acum = 0
             }
-            console.log("[NEW LIMIT]: " + limit)
+            log.debug("NEW LIMIT", limit)
             await limit.save()
             res.status(200).json({
                 message: "Limits updated successfully",
                 data: limit
             });
         } catch (e) {
-            console.error("[ERROR]: " + err)
+            log.error(err)
             res.status(500).json({
                 message: "Internal Server Error on Updating",
                 code: err.code,
@@ -61,7 +62,7 @@ const update = async(req, res) => {
 }
 
 const erase = async(req, res) => {
-    console.log("[DELETE]: limit")
+    log.delete("limit")
     if(req.params.id && req.params.limit) {
         await remove(res, Limit, req.params.limit, "Limit")
     } else return res.status(400).json({ message: "Fields required are null" })
