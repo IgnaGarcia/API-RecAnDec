@@ -1,9 +1,9 @@
 const router = require('express').Router();
 const limitController = require('./limit.controller');
 
-router.post('/:id/limit', limitController.post);
-router.get('/:id/limit', limitController.get);
-router.put('/:id/limit/:limit', limitController.update);
-router.delete('/:id/limit/:limit', limitController.erase);
+router.post('/', verify, limitController.post);
+router.get('/', verify, limitController.get);
+router.put('/:limit', verify, limitController.update);
+router.delete('/:limit', verify, limitController.erase);
 
 module.exports = router;
