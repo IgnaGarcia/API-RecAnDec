@@ -19,8 +19,62 @@
     {}
   ],
   "paths": {
-    "/user/{id}/record": {
+    "/users/register": {
       "post": {
+        "description": "",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/users/login": {
+      "post": {
+        "description": "",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "example": "any"
+                  },
+                  "password": {
+                    "example": "any"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{id}/refresh": {
+      "get": {
         "description": "",
         "parameters": [
           {
@@ -38,6 +92,34 @@
           },
           "400": {
             "description": "Bad Request"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/records/": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "x-access-token",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
           },
           "500": {
             "description": "Internal Server Error"
@@ -65,9 +147,8 @@
         "description": "",
         "parameters": [
           {
-            "name": "id",
-            "in": "path",
-            "required": true,
+            "name": "x-access-token",
+            "in": "header",
             "schema": {
               "type": "string"
             }
@@ -81,23 +162,19 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "500": {
-            "description": "Internal Server Error"
+          "403": {
+            "description": "Forbidden"
           }
         }
       }
     },
-    "/user/{id}/record/balance": {
+    "/records/balance": {
       "get": {
         "description": "",
         "parameters": [
           {
-            "name": "id",
-            "in": "path",
-            "required": true,
+            "name": "x-access-token",
+            "in": "header",
             "schema": {
               "type": "string"
             }
@@ -121,18 +198,21 @@
           "200": {
             "description": "OK"
           },
+          "403": {
+            "description": "Forbidden"
+          },
           "500": {
             "description": "Internal Server Error"
           }
         }
       }
     },
-    "/user/{id}/record/summary/{groupBy}": {
+    "/records/summary/{groupBy}": {
       "get": {
         "description": "",
         "parameters": [
           {
-            "name": "id",
+            "name": "groupBy",
             "in": "path",
             "required": true,
             "schema": {
@@ -140,9 +220,8 @@
             }
           },
           {
-            "name": "groupBy",
-            "in": "path",
-            "required": true,
+            "name": "x-access-token",
+            "in": "header",
             "schema": {
               "type": "string"
             }
@@ -173,18 +252,21 @@
           "200": {
             "description": "OK"
           },
+          "403": {
+            "description": "Forbidden"
+          },
           "500": {
             "description": "Internal Server Error"
           }
         }
       }
     },
-    "/user/{id}/record/historical/{groupBy}": {
+    "/records/historical/{groupBy}": {
       "get": {
         "description": "",
         "parameters": [
           {
-            "name": "id",
+            "name": "groupBy",
             "in": "path",
             "required": true,
             "schema": {
@@ -192,9 +274,8 @@
             }
           },
           {
-            "name": "groupBy",
-            "in": "path",
-            "required": true,
+            "name": "x-access-token",
+            "in": "header",
             "schema": {
               "type": "string"
             }
@@ -218,34 +299,33 @@
           "200": {
             "description": "OK"
           },
+          "403": {
+            "description": "Forbidden"
+          },
           "500": {
             "description": "Internal Server Error"
           }
         }
       }
     },
-    "/user/{id}/category": {
+    "/categories/": {
       "post": {
         "description": "",
         "parameters": [
           {
-            "name": "id",
-            "in": "path",
-            "required": true,
+            "name": "x-access-token",
+            "in": "header",
             "schema": {
               "type": "string"
             }
           }
         ],
         "responses": {
-          "201": {
-            "description": "Created"
-          },
           "400": {
             "description": "Bad Request"
           },
-          "500": {
-            "description": "Internal Server Error"
+          "403": {
+            "description": "Forbidden"
           }
         },
         "requestBody": {
@@ -270,9 +350,8 @@
         "description": "",
         "parameters": [
           {
-            "name": "id",
-            "in": "path",
-            "required": true,
+            "name": "x-access-token",
+            "in": "header",
             "schema": {
               "type": "string"
             }
@@ -286,37 +365,30 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "500": {
-            "description": "Internal Server Error"
+          "403": {
+            "description": "Forbidden"
           }
         }
       }
     },
-    "/user/{id}/limit": {
+    "/limits/": {
       "post": {
         "description": "",
         "parameters": [
           {
-            "name": "id",
-            "in": "path",
-            "required": true,
+            "name": "x-access-token",
+            "in": "header",
             "schema": {
               "type": "string"
             }
           }
         ],
         "responses": {
-          "201": {
-            "description": "Created"
-          },
           "400": {
             "description": "Bad Request"
           },
-          "500": {
-            "description": "Internal Server Error"
+          "403": {
+            "description": "Forbidden"
           }
         },
         "requestBody": {
@@ -341,9 +413,8 @@
         "description": "",
         "parameters": [
           {
-            "name": "id",
-            "in": "path",
-            "required": true,
+            "name": "x-access-token",
+            "in": "header",
             "schema": {
               "type": "string"
             }
@@ -357,21 +428,18 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "500": {
-            "description": "Internal Server Error"
+          "403": {
+            "description": "Forbidden"
           }
         }
       }
     },
-    "/user/{id}/limit/{limit}": {
+    "/limits/{limit}": {
       "put": {
         "description": "",
         "parameters": [
           {
-            "name": "id",
+            "name": "limit",
             "in": "path",
             "required": true,
             "schema": {
@@ -379,9 +447,8 @@
             }
           },
           {
-            "name": "limit",
-            "in": "path",
-            "required": true,
+            "name": "x-access-token",
+            "in": "header",
             "schema": {
               "type": "string"
             }
@@ -393,6 +460,9 @@
           },
           "400": {
             "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
           },
           "500": {
             "description": "Internal Server Error"
@@ -417,57 +487,49 @@
         "description": "",
         "parameters": [
           {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
             "name": "limit",
             "in": "path",
             "required": true,
             "schema": {
               "type": "string"
             }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
           },
-          "400": {
-            "description": "Bad Request"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      }
-    },
-    "/user/{id}/command": {
-      "post": {
-        "description": "",
-        "parameters": [
           {
-            "name": "id",
-            "in": "path",
-            "required": true,
+            "name": "x-access-token",
+            "in": "header",
             "schema": {
               "type": "string"
             }
           }
         ],
         "responses": {
-          "201": {
-            "description": "Created"
-          },
           "400": {
             "description": "Bad Request"
           },
-          "500": {
-            "description": "Internal Server Error"
+          "403": {
+            "description": "Forbidden"
+          }
+        }
+      }
+    },
+    "/commands/": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "x-access-token",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
           }
         },
         "requestBody": {
@@ -498,36 +560,24 @@
         "description": "",
         "parameters": [
           {
-            "name": "id",
-            "in": "path",
-            "required": true,
+            "name": "x-access-token",
+            "in": "header",
             "schema": {
               "type": "string"
             }
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "500": {
-            "description": "Internal Server Error"
+          "403": {
+            "description": "Forbidden"
           }
         }
       }
     },
-    "/user/{id}/command/{command}": {
+    "/commands/{command}": {
       "delete": {
         "description": "",
         "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
           {
             "name": "command",
             "in": "path",
@@ -535,43 +585,43 @@
             "schema": {
               "type": "string"
             }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
           },
-          "400": {
-            "description": "Bad Request"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      }
-    },
-    "/user/{id}/tag": {
-      "post": {
-        "description": "",
-        "parameters": [
           {
-            "name": "id",
-            "in": "path",
-            "required": true,
+            "name": "x-access-token",
+            "in": "header",
             "schema": {
               "type": "string"
             }
           }
         ],
         "responses": {
-          "201": {
-            "description": "Created"
-          },
           "400": {
             "description": "Bad Request"
           },
-          "500": {
-            "description": "Internal Server Error"
+          "403": {
+            "description": "Forbidden"
+          }
+        }
+      }
+    },
+    "/tags/": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "x-access-token",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
           }
         },
         "requestBody": {
@@ -596,9 +646,8 @@
         "description": "",
         "parameters": [
           {
-            "name": "id",
-            "in": "path",
-            "required": true,
+            "name": "x-access-token",
+            "in": "header",
             "schema": {
               "type": "string"
             }
@@ -612,37 +661,30 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "500": {
-            "description": "Internal Server Error"
+          "403": {
+            "description": "Forbidden"
           }
         }
       }
     },
-    "/user/{id}/wallet": {
+    "/wallets/": {
       "post": {
         "description": "",
         "parameters": [
           {
-            "name": "id",
-            "in": "path",
-            "required": true,
+            "name": "x-access-token",
+            "in": "header",
             "schema": {
               "type": "string"
             }
           }
         ],
         "responses": {
-          "201": {
-            "description": "Created"
-          },
           "400": {
             "description": "Bad Request"
           },
-          "500": {
-            "description": "Internal Server Error"
+          "403": {
+            "description": "Forbidden"
           }
         },
         "requestBody": {
@@ -670,9 +712,8 @@
         "description": "",
         "parameters": [
           {
-            "name": "id",
-            "in": "path",
-            "required": true,
+            "name": "x-access-token",
+            "in": "header",
             "schema": {
               "type": "string"
             }
@@ -686,11 +727,8 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "500": {
-            "description": "Internal Server Error"
+          "403": {
+            "description": "Forbidden"
           }
         }
       }
@@ -736,6 +774,22 @@
             }
           }
         }
+      }
+    },
+    "/telegram/{telegramId}/commands": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "telegramId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {}
       }
     },
     "/telegram/{telegramId}/wallets": {

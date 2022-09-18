@@ -16,7 +16,7 @@ const doc = {
 }
 
 const output = './doc/swagger.json'
-const endpoints = ['./app.js']
+const endpoints = ['./api/index.js']
 
 console.log(`Generating ${output} of ${endpoints}`)
 swaggerAutogen(output, endpoints, doc).then( () => {
