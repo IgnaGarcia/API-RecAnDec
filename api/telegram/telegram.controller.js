@@ -25,7 +25,7 @@ const sync = async(req, res) => {
     } else return res.status(400).json({ message: "Fields required are null" })
 }
 
-const command = async(req, res) => {
+const commands = async(req, res) => {
     log.get("command from telegram")
     let query = { 'telegramId': req.params.telegramId }
     await find(res, Command, query, "Commands")
