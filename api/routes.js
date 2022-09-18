@@ -6,10 +6,11 @@ const commandRoutes = require('./command/index');
 const tagRoutes = require('./tag/index');
 const walletRoutes = require('./wallet/index');
 const telegramRoutes = require('./telegram/index');
+const userRoutes = require('./user/index');
 
-// TODO servicios de auth
 const app = express();
 
+app.use('/user', userRoutes);
 app.use('/user', recordRoutes);
 app.use('/user', categoryRoutes);
 app.use('/user', limitRoutes);
