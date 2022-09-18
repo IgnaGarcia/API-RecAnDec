@@ -2,7 +2,6 @@ const Command = require('./command.model');
 
 // TODO servicios de auth
 // TODO put de record
-// TODO telegram services
 const post = async(req, res) => {
     console.log("[POST]: command ")
 
@@ -40,7 +39,7 @@ const post = async(req, res) => {
 
 const get = async(req, res) => {
     console.log("[GET]: command")
-    let query = { 'owner': req.params.id }
+    let query = { $or: [{'owner': req.params.id}, {'telegramId': req.params.id}] }
     console.log(`[QUERY]: ${JSON.stringify(query)}`)
 
     try {
