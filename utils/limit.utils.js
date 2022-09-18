@@ -9,6 +9,8 @@ const verifyAndUpdateLimit = (rec) => {
         let response = {}
         try {
             const limit = await Limit.findOne({ owner: rec.owner, category: rec.category }).exec()
+            // Si no existe el limite termina
+            if(!limit) resolve(null)
 
             const date = new Date(rec.date)
             if(limit.month != date.getMonth()+1 && limit.year != date.getFullYear()) {
