@@ -1,8 +1,8 @@
 const router = require('express').Router();
 const commandController = require('./command.controller');
 
-router.post('/:id/command', commandController.post);
-router.get('/:id/command', commandController.get);
-router.delete('/:id/command/:command', commandController.erase);
+router.post('/', verify, commandController.post);
+router.get('/', verify, commandController.get);
+router.delete('/:command', verify, commandController.erase);
 
 module.exports = router;

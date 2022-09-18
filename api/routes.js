@@ -8,7 +8,6 @@ const walletRoutes = require('./wallet/index');
 const telegramRoutes = require('./telegram/index');
 const userRoutes = require('./user/index');
 
-//TODO update services to receive and verify token
 const app = express();
 
 app.use('/users', userRoutes);
