@@ -7,7 +7,10 @@ const RecordSchema = Schema({
     tags: [ {type: Schema.Types.ObjectId, ref: 'tags'} ],
     wallet: {type: Schema.Types.ObjectId, ref: 'wallets'},
     amount: Number,
-    date: Date,
+    date: {
+        type: Date,
+        default: Date.now
+    },
     isOut: Boolean
 });
 

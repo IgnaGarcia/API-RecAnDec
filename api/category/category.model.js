@@ -7,7 +7,10 @@ const CategorySchema = Schema({
     label: String,
     alias: String,
     isOut: Boolean,
-    createDate: Date
+    createDate: {
+        type: Date,
+        default: Date.now
+    }
 });
 
 CategorySchema.index( { owner: 1, label: 1}, { unique: true } )

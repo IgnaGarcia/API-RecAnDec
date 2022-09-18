@@ -22,15 +22,15 @@ const sync = async(req, res) => {
 }
 
 const wallets = async(req, res) => {
-    getListOf(res, Wallet, req.params.telegramId, "Wallets")
+    await getListOf(res, Wallet, req.params.telegramId, "Wallets")
 }
 
 const categories = async(req, res) => {
-    getListOf(res, Category, req.params.telegramId, "Categories")
+    await getListOf(res, Category, req.params.telegramId, "Categories")
 }
 
 const tags = async(req, res) => {
-    getListOf(res, Tag, req.params.telegramId, "Tags")
+    await getListOf(res, Tag, req.params.telegramId, "Tags")
 }
 
 module.exports = { sync, wallets, categories, tags };

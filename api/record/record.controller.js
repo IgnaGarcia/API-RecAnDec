@@ -1,6 +1,6 @@
 const Record = require('./record.model');
 const { verifyAndUpdateLimit } = require('../../utils/limit.utils');
-const { getWithPaging } = require('../../utils/paging.utils');
+const { findWithPaging } = require('../../utils/mongoose.utils');
 const { dateBetween, fieldInGroup, sumInPeriod, balanceInPeriod, calcHistorical } = require('../../utils/query.utils');
 // TODO put de record
 
@@ -10,7 +10,6 @@ const post = async(req, res) => {
     if(req.body && req.body.amount && req.body.category) {
         console.log("[BODY]: " + JSON.stringify(req.body) + "; [ID]: " + req.params.id)
         let record = new Record({ owner: req.params.id, ...req.body })
-        record.date = new Date().toISOString()
         console.log("[RECORD]: " + record)
 
         const msg = record.isOut? await verifyAndUpdateLimit(record) : null
@@ -26,6 +25,7 @@ const post = async(req, res) => {
             console.error("[ERROR]" + err)
             res.status(500).json({
                 message: "Internal Server Error on Saving",
+                code: err.code,
                 error: err
             });
         }
@@ -44,21 +44,7 @@ const get = async(req, res) => {
     query = fieldInGroup(query, req.body.wallets, "wallet")
     console.log(`[QUERY]: ${JSON.stringify(query)}`)
 
-    try {
-        const paginatedResponse = await getWithPaging(Record, query, { date: -1 }, page)
-
-        console.log(`[RECORDS FINDED]: ${paginatedResponse.data.length}`)
-        res.status(200).json({
-            message: "Record finded successfully",
-            ...paginatedResponse
-        });
-    } catch (err) {
-        console.error("[ERROR]" + err)
-        res.status(500).json({
-            message: "Internal Server Error on Finding",
-            error: err
-        });
-    }
+    await findWithPaging(res, Record, query, "Records", { date: -1 }, page)
 }
 
 const balance = async(req, res) => {
@@ -81,6 +67,7 @@ const balance = async(req, res) => {
         console.error("[ERROR]" + err)
         res.status(500).json({
             message: "Internal Server Error on Aggregating",
+            code: err.code,
             error: err
         });
     }
@@ -103,6 +90,7 @@ const summary = async(req, res) => {
         console.error("[ERROR]" + err)
         res.status(500).json({
             message: "Internal Server Error on Aggregating",
+            code: err.code,
             error: err
         });
    }
@@ -123,24 +111,25 @@ const historical = async(req, res) => {
 
     let query = calcHistorical(req.params.id, req.params.groupBy, req.query.dateFrom, req.query.dateUntil)
     try {
-            const aggregated = await Record.aggregate(query)
-            const response = {}
-            aggregated.forEach( el => {
-            if(response[el._id.label]) response[el._id.label].push(elToObj(el)) 
-            else response[el._id.label] = [elToObj(el)]
-            })
-            console.log(`[RECORDS AGGREGATED]: ${req.params.groupBy}[${Object.keys(response)}]`)
-    
-            res.status(200).json({
-                message: "Records Aggregated Succesfully",
-                data: response
-            })
+        const aggregated = await Record.aggregate(query)
+        const response = {}
+        aggregated.forEach( el => {
+        if(response[el._id.label]) response[el._id.label].push(elToObj(el)) 
+        else response[el._id.label] = [elToObj(el)]
+        })
+        console.log(`[RECORDS AGGREGATED]: ${req.params.groupBy}[${Object.keys(response)}]`)
+
+        res.status(200).json({
+            message: "Records Aggregated Succesfully",
+            data: response
+        })
     } catch (err) {
-            console.error("[ERROR]" + err)
-            res.status(500).json({
-                message: "Internal Server Error on Aggregating",
-                error: err
-            });
+        console.error("[ERROR]" + err)
+        res.status(500).json({
+            message: "Internal Server Error on Aggregating",
+            code: err.code,
+            error: err
+        });
     }
 }
 

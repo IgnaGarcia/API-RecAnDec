@@ -1,4 +1,5 @@
 const Command = require('./command.model');
+const { find, create, remove } = require('../../utils/mongoose.utils')
 
 const post = async(req, res) => {
     console.log("[POST]: command ")
@@ -15,63 +16,21 @@ const post = async(req, res) => {
         } else {
             command = new Command({ owner: req.params.id, ...req.body})
         }
-        console.log("[COMMAND]: " + command)
-
-        try {
-            await command.save()
-            console.log("[COMMAND CREATED/UPDATED]: " + command)
-            res.status(201).json({
-                message: "Command created/updated successfully",
-                data: command
-            });
-        } catch(err) {
-            console.log("[ERROR]: " + err)
-            res.status(500).json({
-                message: "Internal Server Error on Saving",
-                code: err.code,
-                error: err
-            });
-        }
-    } else return res.status(400).json({ message: "Fields  required are null"})
+        
+        await create(res, command, "Command")
+    } else return res.status(400).json({ message: "Fields required are null"})
 }
 
 const get = async(req, res) => {
     console.log("[GET]: command")
     let query = { $or: [{'owner': req.params.id}, {'telegramId': req.params.id}] }
-    console.log(`[QUERY]: ${JSON.stringify(query)}`)
-
-    try {
-        let response = await Command.find(query)
-        console.log(`[COMMANDS FINDED]: ${response.length}`)
-        res.status(200).json({
-            message: "Commands finded successfully",
-            data: response
-        });
-    } catch (err) {
-        console.error("[ERROR]: " + err)
-        res.status(500).json({
-            message: "Internal Server Error on Finding",
-            error: err
-        });
-    }
+    await find(res, Command, query, "Commands")
 }
 
 const erase = async(req, res) => {
     console.log("[DELETE]: command")
     if(req.params.id && req.params.command) {
-        try {
-            await Command.findByIdAndDelete(req.params.command);
-            res.status(200).json({
-                message: "Command deleted successfully",
-                data: req.params.command
-            });
-        } catch (e) {
-            console.error("[ERROR]: " + err)
-            res.status(500).json({
-                message: "Internal Server Error on Deleting",
-                error: err
-            });
-        }
+        await remove(res, Command, req.params.command, "Command")
     } else return res.status(400).json({ message: "Fields required are null"})
 }
 
