@@ -3,7 +3,6 @@ const log = require('../../utils/log.utils')
 const { verifyAndUpdateLimit } = require('../../utils/limit.utils');
 const { findWithPaging } = require('../../utils/mongoose.utils');
 const { dateBetween, fieldInGroup, sumInPeriod, balanceInPeriod, calcHistorical } = require('../../utils/query.utils');
-// TODO put de record
 
 const post = async(req, res) => {
     log.post("record")
@@ -76,6 +75,30 @@ const balance = async(req, res) => {
     }
 }
 
+const update = async(req, res) => {
+    log.put("record")
+    if(req.id && req.params.record && req.body) {
+        try {
+            let record = await Record.findByIdAndUpdate(req.params.record, 
+                { wallet: req.body.wallet, tags: req.body.tags },
+                { new: true })
+            
+            log.debug("RECORD UPDATED", record)
+            res.status(200).json({
+                message: "Record updated successfully",
+                data: record
+            });
+        } catch (e) {
+            log.error(err)
+            res.status(500).json({
+                message: "Internal Server Error on Updating",
+                code: err.code,
+                error: err
+            });
+        }
+    } else return res.status(400).json({ message: "Fields required are null" })
+}
+
 const summary = async(req, res) => {
     // Para grafico de tortas
     log.get("summary")
@@ -138,4 +161,4 @@ const historical = async(req, res) => {
     }
 }
 
-module.exports = { post, get, balance, summary, historical }
+module.exports = { post, get, balance, summary, historical, update }
