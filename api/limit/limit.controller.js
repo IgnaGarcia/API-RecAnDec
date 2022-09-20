@@ -1,6 +1,6 @@
 const Limit = require('./limit.model');
 const log = require('../../utils/log.utils')
-const { getAcumOfPeriod } = require('../../utils/limit.utils');
+const { getAcumOfPeriod } = require('../../utils/record.utils');
 const { findWithPaging, create, remove } = require('../../utils/mongoose.utils');
 
 const post = async(req, res) => {

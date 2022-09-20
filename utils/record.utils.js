@@ -1,4 +1,5 @@
 const Limit = require('../api/limit/limit.model');
+const Wallet = require('../api/wallet/wallet.model');
 const Record = require('../api/record/record.model');
 const ObjectId = require("mongoose").Types.ObjectId;
 const log = require('./log.utils')
@@ -90,4 +91,21 @@ const getAcumOfPeriod = (owner, category, month, year) => {
 }
 
 
-module.exports = { verifyAndUpdateLimit, getAcumOfPeriod }
+const updateWallet = (rec) => {
+    log.debug("UPDATE WALLET", rec.wallet)
+
+    return new Promise(async(resolve, reject) => {
+        try {
+            let wallet = await Wallet.findById(rec.wallet)
+            wallet.acum = rec.isOut? wallet.acum - rec.amount : wallet.acum + rec.amount
+            log.debug("WALLET UPDATED", wallet)
+            await wallet.save()
+            resolve(wallet)
+        } catch (e) {
+            log.error(e)
+            reject(e)
+        }
+    })
+}
+
+module.exports = { verifyAndUpdateLimit, getAcumOfPeriod, updateWallet }

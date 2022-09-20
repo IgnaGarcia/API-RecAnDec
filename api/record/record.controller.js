@@ -1,6 +1,6 @@
 const Record = require('./record.model');
 const log = require('../../utils/log.utils')
-const { verifyAndUpdateLimit } = require('../../utils/limit.utils');
+const { verifyAndUpdateLimit, updateWallet } = require('../../utils/record.utils');
 const { findWithPaging } = require('../../utils/mongoose.utils');
 const { dateBetween, fieldInGroup, sumInPeriod, balanceInPeriod, calcHistorical } = require('../../utils/query.utils');
 
@@ -13,6 +13,7 @@ const post = async(req, res) => {
         log.debug("RECORD", record)
 
         const msg = record.isOut? await verifyAndUpdateLimit(record) : null
+        if(record.wallet) await updateWallet(record)
 
         try {
             await record.save()
