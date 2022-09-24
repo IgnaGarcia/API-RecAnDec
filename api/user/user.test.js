@@ -1,25 +1,18 @@
 const mockingoose = require('mockingoose')
-var httpMocks = require('node-mocks-http');
+const httpMocks = require('node-mocks-http');
 const User = require('./user.model')
+const { user } = require('../../mocks/mocks')
 const { register, login, refreshToken } = require('./user.controller')
-
-const mocks = {
-    "_id": "63190a6acf10c3930a8386be",
-    "email": "gnachoxp@gmail.com",
-    "password": "$2b$12$zYXkE639r0L.JlYVqYM1pODUXeknllVEB0YqZIhhX8HINF8yKpHXS",
-    "name": "Igna Garcia",
-    "telegramId": "982840555"
-}
 
 describe('POST /register', () => {
     it('Should create new user', async () => {
         // Mocking
-        mockingoose(User).toReturn(mocks, "save")
+        mockingoose(User).toReturn(user, "save")
         const req = httpMocks.createRequest({
             body: { 
-                email: mocks.email, 
+                email: user.email, 
                 password: "123", 
-                name: mocks.name
+                name: user.name
             },
         })
         const res = httpMocks.createResponse()
@@ -30,7 +23,7 @@ describe('POST /register', () => {
         // Testing
         const json = res._getJSONData()
         expect(res.statusCode).toEqual(201)
-        expect(json.data.email).toEqual(mocks.email)
+        expect(json.data.email).toEqual(user.email)
         expect(json.data.password).not.toEqual("123")
         expect(json.token).not.toBeNull()
     })
@@ -39,7 +32,7 @@ describe('POST /register', () => {
         const req = httpMocks.createRequest({
             body: { 
                 password: "123", 
-                name: mocks.name
+                name: user.name
             },
         })
         const res = httpMocks.createResponse()
@@ -56,9 +49,9 @@ describe('POST /register', () => {
 describe('POST /login', () => {
     it('Should verify password and generate new token', async () => {
         // Mocking
-        mockingoose(User).toReturn(mocks, "findOne")
+        mockingoose(User).toReturn(user, "findOne")
         const req = httpMocks.createRequest({
-            body: { email: mocks.email, password: "123" },
+            body: { email: user.email, password: "123" },
         })
         const res = httpMocks.createResponse()
 
@@ -72,9 +65,9 @@ describe('POST /login', () => {
     })
     it('Should fail on verify password', async () => {
         // Mocking
-        mockingoose(User).toReturn(mocks, "findOne")
+        mockingoose(User).toReturn(user, "findOne")
         const req = httpMocks.createRequest({
-            body: { email: mocks.email, password: "123456" },
+            body: { email: user.email, password: "123456" },
         })
         const res = httpMocks.createResponse()
 
@@ -104,9 +97,9 @@ describe('POST /login', () => {
 describe('GET /:id/refresh', () => {
     it('Should generate new token', async () => {
         // Mocking
-        mockingoose(User).toReturn(mocks, "findOne")
+        mockingoose(User).toReturn(user, "findOne")
         const req = httpMocks.createRequest({
-            params: { id: mocks._id },
+            params: { id: user._id },
         })
         const res = httpMocks.createResponse()
 
