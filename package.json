@@ -4,7 +4,8 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "test": "jest --silent --coverage --colors",
+    "test": "jest --coverage --colors --silent",
+    "test:log": "jest --coverage --colors",
     "doc": "node doc.js",
     "dev": "nodemon dev.js"
   },

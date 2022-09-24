@@ -7,7 +7,7 @@ const { generateToken } = require('../../utils/telegram.utils');
 const register = async(req, res) => {
     log.post("register")
 
-    if (req.body && Object.keys(req.body).length > 0) {
+    if (req.body && req.body.email && req.body.name && req.body.password) {
         log.content(req.body, "null")
         let user = new User(req.body);
         user.password = await user.encryptPassword(user.password);
