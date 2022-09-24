@@ -5,7 +5,11 @@ const Schema = mongoose.Schema;
 const TagSchema = Schema({
     owner: {type: Schema.Types.ObjectId, ref: 'users'},
     label: String,
-    alias: String
+    alias: String,
+    createDate: {
+        type: Date,
+        default: Date.now
+    }
 });
 
 TagSchema.index( { owner: 1, label: 1}, { unique: true } )

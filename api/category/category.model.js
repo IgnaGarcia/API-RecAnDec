@@ -6,7 +6,11 @@ const CategorySchema = Schema({
     owner: {type: Schema.Types.ObjectId, ref: 'users'},
     label: String,
     alias: String,
-    isOut: Boolean
+    isOut: Boolean,
+    createDate: {
+        type: Date,
+        default: Date.now
+    }
 });
 
 CategorySchema.index( { owner: 1, label: 1}, { unique: true } )
