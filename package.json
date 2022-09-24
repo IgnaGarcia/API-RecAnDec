@@ -4,7 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "test": "jest --coverage --verbose",
+    "test": "jest --silent --coverage --colors",
     "doc": "node doc.js",
     "dev": "nodemon dev.js"
   },
@@ -32,8 +32,9 @@
   },
   "devDependencies": {
     "jest": "^29.0.3",
+    "mockingoose": "^2.15.2",
+    "node-mocks-http": "^1.11.0",
     "nodemon": "^2.0.19",
-    "supertest": "^6.2.4",
     "swagger-autogen": "^2.21.5"
   },
   "jest": {
