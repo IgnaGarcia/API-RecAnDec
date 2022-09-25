@@ -1,6 +1,6 @@
 const mockingoose = require('mockingoose')
 const httpMocks = require('node-mocks-http');
-const Tag = require('../tag/tag.model')
+const Tag = require('./tag.model')
 const { tagsMock } = require('../../mocks/mocks')
 const { post, get } = require('./tag.controller');
 
