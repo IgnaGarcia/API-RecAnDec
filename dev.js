@@ -6,7 +6,7 @@ require('dotenv').config();
 const start = async() => {
     mongoose.Promise = global.Promise;
     try {
-        await mongoose.connect(`${process.env.DB_CONNECT}/test`)
+        await mongoose.connect(`${process.env.DB_CONNECT}/collections`)
         log.debug("OK", "Success to connect to DB")
     
         app.listen(process.env.PORT, () => {

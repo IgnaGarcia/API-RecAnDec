@@ -3,7 +3,6 @@ const httpMocks = require('node-mocks-http');
 const Tag = require('../tag/tag.model')
 const { tagsMock } = require('../../mocks/mocks')
 const { post, get } = require('./tag.controller');
-const { query } = require('express');
 
 describe('POST /tags', () => {
     it('Should create new tag', async () => {

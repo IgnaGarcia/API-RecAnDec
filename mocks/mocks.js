@@ -103,4 +103,34 @@ tagsMock = [
     }
 ]
 
-module.exports = { userMock, walletsMock, commandsMock, categoriesMock, tagsMock }
+limitsMock = [
+    {
+        "_id": "63190b3ecf10c3930a8386c1",
+        "owner": "63190a6acf10c3930a8386be",
+        "category": "63190ab3cf10c3930a8386bf",
+        "month": "9",
+        "year": "2022",
+        "acum": 10000,
+        "amount": 15000
+    },
+    {
+        "_id": "63290b3ecf10c3930a8386c1",
+        "owner": "63190a6acf10c3930a8386be",
+        "category": "63490ab3cf10c3930a8386bf",
+        "month": "8",
+        "year": "2021",
+        "acum": 300,
+        "amount": 1000
+    },
+    {
+        "_id": "63390b3ecf10c3930a8386c1",
+        "owner": "63190a6acf10c3930a8386be",
+        "category": "63890ab3cf10c3930a8386bf",
+        "month": "9",
+        "year": "2022",
+        "acum": 40000,
+        "amount": 35000
+    }
+]
+
+module.exports = { userMock, walletsMock, commandsMock, categoriesMock, tagsMock, limitsMock }
