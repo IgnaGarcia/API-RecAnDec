@@ -1,6 +1,6 @@
 const mockingoose = require('mockingoose')
 const httpMocks = require('node-mocks-http');
-const Limit = require('../limit/limit.model')
+const Limit = require('./limit.model')
 const Record = require('../record/record.model')
 const { limitsMock } = require('../../mocks/mocks')
 const { post, get, update, erase } = require('./limit.controller');

@@ -82,29 +82,30 @@ const login = async(req, res) => {
 
 const refreshToken = async(req, res) => {
     log.post("refresh")
-
-    if (req.params.id) {
-        log.content("null", req.params.id)
+    log.content("null", req.params.id)
+    
+    try {   
+        let user = await User.findById(req.params.id);
+        if (!user) return res.status(404).json({
+            message: `User ${req.params.id} not found`,
+            code: 404
+        })
+        const token = get(user._id)
         
-        try {   
-            let user = await User.findById(req.params.id);
-            const token = get(user._id)
-            
-            res.status(201).json({
-                message: "User Token updated successfully",
-                data: user,
-                token: token
-            });
-        } catch(err) { 
-            log.error(err)
+        res.status(201).json({
+            message: "User Token updated successfully",
+            data: user,
+            token: token
+        });
+    } catch(err) { 
+        log.error(err)
 
-            res.status(500).json({ 
-                message: "Internal Server Error On Finding", 
-                code: err.code,
-                error: err 
-            })
-        }    
-    } else return res.status(400).json({ message: "User not received" });
+        res.status(500).json({ 
+            message: "Internal Server Error On Finding", 
+            code: err.code,
+            error: err 
+        })
+    }    
 }
 
 module.exports = { register, login, refreshToken }

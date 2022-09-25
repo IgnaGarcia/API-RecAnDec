@@ -2,7 +2,7 @@ const mockingoose = require('mockingoose')
 const httpMocks = require('node-mocks-http');
 const User = require('./user.model')
 const { userMock } = require('../../mocks/mocks')
-const { register, login, refreshToken } = require('./user.controller')
+const { register, login, refreshToken } = require('./user.controller');
 
 describe('POST /register', () => {
     it('Should create new user', async () => {
@@ -41,8 +41,37 @@ describe('POST /register', () => {
         await register(req, res)
 
         // Testing
-        const json = res._getJSONData()
         expect(res.statusCode).toEqual(400)
+    })
+    it('Should fail for error in mongoose', async() => {
+        mockingoose(User).toReturn(new Error("some err"), 'save')
+        const req = httpMocks.createRequest({
+            body: { 
+                email: userMock.email, 
+                password: "123", 
+                name: userMock.name
+            },
+        })
+        const res = httpMocks.createResponse()
+
+        await register(req, res)
+        expect(res.statusCode).toEqual(500)
+    })
+    it('Should fail for duplicate key', async() => {
+        e = new Error("Duplicate key error")
+        e.code = 11000
+        mockingoose(User).toReturn(e, 'save')
+        const req = httpMocks.createRequest({
+            body: { 
+                email: userMock.email, 
+                password: "123", 
+                name: userMock.name
+            },
+        })
+        const res = httpMocks.createResponse()
+
+        await register(req, res)
+        expect(res.statusCode).toEqual(500)
     })
 })
 
@@ -92,6 +121,16 @@ describe('POST /login', () => {
         // Testing
         expect(res.statusCode).toEqual(400)
     })
+    it('Should fail on user not found', async() => {
+        mockingoose(User).toReturn(null, 'findOne')
+        const req = httpMocks.createRequest({
+            body: { email: userMock.email, password: "123456" },
+        })
+        const res = httpMocks.createResponse()
+
+        await login(req, res)
+        expect(res.statusCode).toEqual(500)
+    })
 })
 
 describe('GET /:id/refresh', () => {
@@ -110,5 +149,25 @@ describe('GET /:id/refresh', () => {
         const json = res._getJSONData()
         expect(res.statusCode).toEqual(201)
         expect(json.token).not.toBeNull()
+    })
+    it('Should fail on user not found', async() => {
+        mockingoose(User).toReturn(null, 'findOne')
+        const req = httpMocks.createRequest({
+            params: { id: userMock._id },
+        })
+        const res = httpMocks.createResponse()
+
+        await refreshToken(req, res)
+        expect(res.statusCode).toEqual(404)
+    })
+    it('Should fail on mongoose error', async() => {
+        mockingoose(User).toReturn(new Error("some err"), 'findOne')
+        const req = httpMocks.createRequest({
+            params: { id: userMock._id },
+        })
+        const res = httpMocks.createResponse()
+
+        await refreshToken(req, res)
+        expect(res.statusCode).toEqual(500)
     })
 })
