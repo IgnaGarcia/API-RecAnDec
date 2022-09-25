@@ -91,6 +91,16 @@ describe('GET /:telegramId/wallets', () => {
         await wallets(req, res)
         expect(res.statusCode).toEqual(200)
     })
+    it('Should not found user', async () => {
+        mockingoose(User).toReturn(null, "find")
+        const req = httpMocks.createRequest({
+            params: { telegramId: "44778822" }
+        })
+        const res = httpMocks.createResponse()
+
+        await wallets(req, res)
+        expect(res.statusCode).toEqual(404)
+    })
 })
 
 describe('GET /:telegramId/categories', () => {

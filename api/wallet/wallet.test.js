@@ -1,20 +1,20 @@
 const mockingoose = require('mockingoose')
 const httpMocks = require('node-mocks-http');
 const Wallet = require('./wallet.model')
-const { wallets } = require('../../mocks/mocks')
+const { walletsMock } = require('../../mocks/mocks')
 const { post, get } = require('./wallet.controller')
 
 describe('POST /wallets', () => {
     it('Should POST a new Wallet', async() => {
         // Mocking
-        mockingoose(Wallet).toReturn(wallets[0], "save")
+        mockingoose(Wallet).toReturn(walletsMock[0], "save")
         const req = httpMocks.createRequest({
             body: {
-                "label": "Efectivo",
-                "acum": 30000,
-                "alias": "efv",
+                "label": walletsMock[0].label,
+                "acum": walletsMock[0].acum,
+                "alias": walletsMock[0].alias,
             },
-            id: "63190a6acf10c3930a8386be"
+            id: walletsMock[0].owner
         })
         const res = httpMocks.createResponse()
 
@@ -24,9 +24,9 @@ describe('POST /wallets', () => {
         // Testing
         const json = res._getJSONData()
         expect(res.statusCode).toEqual(201)
-        expect(json.data.label).toEqual("Efectivo")
-        expect(json.data.alias).toEqual("efv")
-        expect(json.data.acum).toEqual(30000)
+        expect(json.data.label).toEqual(walletsMock[0].label)
+        expect(json.data.alias).toEqual(walletsMock[0].alias)
+        expect(json.data.acum).toEqual(walletsMock[0].acum)
     })
     it('Should FAIL with empty label', async() => {
         const req = httpMocks.createRequest({
@@ -51,11 +51,11 @@ describe('POST /wallets', () => {
 describe('GET /wallets', () => {
     it('Should GET Wallet list', async() => {
         // Mocking
-        mockingoose(Wallet).toReturn(wallets, 'find')
+        mockingoose(Wallet).toReturn(walletsMock, 'find')
         mockingoose(Wallet).toReturn(3, 'count')
         const req = httpMocks.createRequest({
             query: { "page": null },
-            id: "63190a6acf10c3930a8386be"
+            id: walletsMock[0].owner
         })
         const res = httpMocks.createResponse()
 
@@ -65,7 +65,7 @@ describe('GET /wallets', () => {
         // Testing
         const json = res._getJSONData()
         expect(res.statusCode).toEqual(200)
-        expect(json.data.length).toEqual(wallets.length)
+        expect(json.data.length).toEqual(walletsMock.length)
         expect(json.paging.previus).toEqual(null)
         expect(json.paging.next).toEqual(null)
     })
@@ -75,7 +75,7 @@ describe('GET /wallets', () => {
         mockingoose(Wallet).toReturn(3, 'count')
         const req = httpMocks.createRequest({
             query: { "page": 2 },
-            id: "63190a6acf10c3930a8386be"
+            id: walletsMock[0].owner
         })
         const res = httpMocks.createResponse()
 
