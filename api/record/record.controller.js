@@ -138,7 +138,8 @@ const historical = async(req, res) => {
         }
     }
 
-    let query = calcHistorical(req.id, req.params.groupBy, req.query.dateFrom, req.query.dateUntil)
+    let query = calcHistorical(req.id, req.params.groupBy, req.query.filter)
+    if(!query) return res.status(400).json({ message: "Fields required are null" })
     try {
         const aggregated = await Record.aggregate(query)
         const response = {}

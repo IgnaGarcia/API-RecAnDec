@@ -256,24 +256,144 @@ describe('GET /records/summary/:groupBy', () => {
 
 // TODO calc historical
 describe('GET /records/historical/:groupBy', () => {
+    let commonMockBalance = [
+        {
+            _id: {
+                key: "63190ab3cf10c3930a8386bf",
+                label: "Alimentos",
+                year: "2022", month: "9"
+            },
+            acum: 300, 
+            count: 2
+        },
+        {
+            _id: {
+                key: "63190ab3cf10c3930a8386bf",
+                label: "Alimentos",
+                year: "2022", month: "8"
+            },
+            acum: 700, 
+            count: 4
+        },
+        {
+            _id: {
+                key: "63290ab3cf10c3930a8386bf",
+                label: "Impuestos",
+                year: "2022", month: "8"
+            },
+            acum: 7000, 
+            count: 4
+        }
+    ]
     it('Should calculate historical', async() => {
-        let mockBalance = [ ]
-        mockingoose(Record).toReturn(mockBalance, 'aggregate')
+        mockingoose(Record).toReturn(commonMockBalance, 'aggregate')
         const req = httpMocks.createRequest({
             id: recordsMock[0].owner,
             params: { groupBy: "category" },
             query: { 
-                dateFrom: "2022-08-01",
-                dateUntil: "2022-09-31"
+                filter: ["63190ab3cf10c3930a8386bf", "63290ab3cf10c3930a8386bf", "63390ab3cf10c3930a8386bf"]
             }
         })
         const res = httpMocks.createResponse()
 
-        /*await historical(req, res)
+        await historical(req, res)
 
         const json = res._getJSONData()
         expect(res.statusCode).toEqual(200)
-        expect(json.data.length).toEqual(3)*/
+        expect(json.data.Alimentos.length).toEqual(2)
+        expect(json.data.Impuestos.length).toEqual(1)
+    })
+    it('Should calculate historical', async() => {
+        mockingoose(Record).toReturn(commonMockBalance, 'aggregate')
+        const req = httpMocks.createRequest({
+            id: recordsMock[0].owner,
+            params: { groupBy: "tags" },
+            query: { 
+                filter: ["63190ab3cf10c3930a8386bf", "63290ab3cf10c3930a8386bf", "63390ab3cf10c3930a8386bf"]
+            }
+        })
+        const res = httpMocks.createResponse()
+
+        await historical(req, res)
+
+        const json = res._getJSONData()
+        expect(res.statusCode).toEqual(200)
+        expect(json.data.Alimentos.length).toEqual(2)
+        expect(json.data.Impuestos.length).toEqual(1)
+    })
+    it('Should calculate historical', async() => {
+        mockingoose(Record).toReturn(commonMockBalance, 'aggregate')
+        const req = httpMocks.createRequest({
+            id: recordsMock[0].owner,
+            params: { groupBy: "wallet" },
+            query: { 
+                filter: ["63190ab3cf10c3930a8386bf", "63290ab3cf10c3930a8386bf", "63390ab3cf10c3930a8386bf"]
+            }
+        })
+        const res = httpMocks.createResponse()
+
+        await historical(req, res)
+
+        const json = res._getJSONData()
+        expect(res.statusCode).toEqual(200)
+        expect(json.data.Alimentos.length).toEqual(2)
+        expect(json.data.Impuestos.length).toEqual(1)
+    })
+    it('Should calculate historical of isOut', async() => {
+        let mockBalance = [
+            {
+                _id: {
+                    key: "isOut",
+                    label: "true",
+                    year: "2022", month: "9"
+                },
+                acum: 300, 
+                count: 2
+            },
+            {
+                _id: {
+                    key: "isOut",
+                    label: "true",
+                    year: "2022", month: "8"
+                },
+                acum: 700, 
+                count: 4
+            },
+            {
+                _id: {
+                    key: "isOut",
+                    label: "false",
+                    year: "2022", month: "8"
+                },
+                acum: 7000, 
+                count: 4
+            }
+        ]
+        mockingoose(Record).toReturn(mockBalance, 'aggregate')
+        const req = httpMocks.createRequest({
+            id: recordsMock[0].owner,
+            params: { groupBy: "isOut" },
+            query: { 
+                filter: []
+            }
+        })
+        const res = httpMocks.createResponse()
+
+        await historical(req, res)
+
+        const json = res._getJSONData()
+        expect(res.statusCode).toEqual(200)
+        expect(json.data.true.length).toEqual(2)
+        expect(json.data.false.length).toEqual(1)
+    })
+    it('Should fail on empty groupBy', async() => {
+        const req = httpMocks.createRequest({
+            id: recordsMock[0].owner
+        })
+        const res = httpMocks.createResponse()
+
+        await historical(req, res)
+        expect(res.statusCode).toEqual(400)
     })
     it('Should fail on aggregate', async() => {
         mockingoose(Record).toReturn(new Error("some error"), 'aggregate')
@@ -281,8 +401,7 @@ describe('GET /records/historical/:groupBy', () => {
             id: recordsMock[0].owner,
             params: { groupBy: "category" },
             query: { 
-                dateFrom: "2022-08-01",
-                dateUntil: "2022-09-31"
+                filter: ["63190ab3cf10c3930a8386bf", "63290ab3cf10c3930a8386bf", "63390ab3cf10c3930a8386bf"]
             }
         })
         const res = httpMocks.createResponse()
