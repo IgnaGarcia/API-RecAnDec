@@ -105,6 +105,7 @@ const summary = async(req, res) => {
     log.content(req.query, req.id)
    
    let query = sumInPeriod(req.id, req.params.groupBy, req.query.filter, req.query.dateFrom, req.query.dateUntil)
+   if(!query) return res.status(400).json({ message: "Fields required are null" })
    try {
         const aggregated = await Record.aggregate(query)
         log.debug("RECORDS AGGREGATED", aggregated.length)
