@@ -2,8 +2,10 @@ const Category = require('../category/category.model');
 const Wallet = require('../wallet/wallet.model');
 const Tag = require('../tag/tag.model');
 const User = require("../user/user.model");
+const Command = require('../command/command.model');
 const log = require('../../utils/log.utils')
 const { getListOf } = require("../../utils/telegram.utils");
+const { find } = require("../../utils/mongoose.utils");
 
 const sync = async(req, res) => {
     if(req.params.telegramId && req.body && req.body.email && req.body.securityCode) {
@@ -23,6 +25,12 @@ const sync = async(req, res) => {
     } else return res.status(400).json({ message: "Fields required are null" })
 }
 
+const commands = async(req, res) => {
+    log.get("command from telegram")
+    let query = { 'telegramId': req.params.telegramId }
+    await find(res, Command, query, "Commands")
+}
+
 const wallets = async(req, res) => {
     await getListOf(res, Wallet, req.params.telegramId, "Wallets")
 }
@@ -35,4 +43,4 @@ const tags = async(req, res) => {
     await getListOf(res, Tag, req.params.telegramId, "Tags")
 }
 
-module.exports = { sync, wallets, categories, tags };
+module.exports = { sync, wallets, categories, tags, commands };

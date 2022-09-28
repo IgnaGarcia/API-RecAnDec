@@ -3,8 +3,8 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const morgan = require('morgan');
 const swaggerUi = require('swagger-ui-express');
-const swaggerDoc = require('./doc/swagger.json');
-const apiRoutes = require('./api/routes');
+const swaggerDoc = require('../doc/swagger.json');
+const apiRoutes = require('./routes');
 
 const app = express();
 

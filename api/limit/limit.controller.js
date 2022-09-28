@@ -1,15 +1,15 @@
 const Limit = require('./limit.model');
 const log = require('../../utils/log.utils')
-const { getAcumOfPeriod } = require('../../utils/limit.utils');
+const { getAcumOfPeriod } = require('../../utils/record.utils');
 const { findWithPaging, create, remove } = require('../../utils/mongoose.utils');
 
 const post = async(req, res) => {
     log.post("limit")
 
     if(req.body && req.body.category && req.body.amount) {
-        log.content(req.body, req.params.id)
+        log.content(req.body, req.id)
         let today = new Date()
-        let limit = new Limit({ owner: req.params.id, 
+        let limit = new Limit({ owner: req.id, 
             month: today.getMonth()+1,
             year: today.getFullYear(),
             ...req.body })
@@ -23,13 +23,13 @@ const get = async(req, res) => {
     log.get("limits")
     const page = req.query.page ? Number(req.query.page) : 1
 
-    let query = { 'owner': req.params.id }
+    let query = { 'owner': req.id }
     await findWithPaging(res, Limit, query, "Limits", { year: -1, month: -1 }, page)
 }
 
 const update = async(req, res) => {
     log.put("limit")
-    if(req.params.id && req.params.limit && req.body.amount) {
+    if(req.id && req.params.limit && req.body.amount) {
         try {
             let limit = await Limit.findById(req.params.limit);
             log.debug("LIMIT", limit)
@@ -63,7 +63,7 @@ const update = async(req, res) => {
 
 const erase = async(req, res) => {
     log.delete("limit")
-    if(req.params.id && req.params.limit) {
+    if(req.id && req.params.limit) {
         await remove(res, Limit, req.params.limit, "Limit")
     } else return res.status(400).json({ message: "Fields required are null" })
 }

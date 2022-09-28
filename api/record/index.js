@@ -1,11 +1,13 @@
 const router = require('express').Router();
 const recordController = require('./record.controller');
+const { verify } = require('../../utils/auth.utils')
 
-router.post('/:id/record', recordController.post);
-router.get('/:id/record', recordController.get);
+router.post('/', verify, recordController.post);
+router.get('/', verify, recordController.get);
+router.put('/:record', verify, recordController.update);
 
-router.get('/:id/record/balance', recordController.balance);
-router.get('/:id/record/summary/:groupBy', recordController.summary);
-router.get('/:id/record/historical/:groupBy', recordController.historical);
+router.get('/balance', verify, recordController.balance);
+router.get('/summary/:groupBy', verify, recordController.summary);
+router.get('/historical/:groupBy', verify, recordController.historical);
 
 module.exports = router;

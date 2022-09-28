@@ -1,19 +1,19 @@
 const Record = require('./record.model');
 const log = require('../../utils/log.utils')
-const { verifyAndUpdateLimit } = require('../../utils/limit.utils');
+const { verifyAndUpdateLimit, updateWallet } = require('../../utils/record.utils');
 const { findWithPaging } = require('../../utils/mongoose.utils');
 const { dateBetween, fieldInGroup, sumInPeriod, balanceInPeriod, calcHistorical } = require('../../utils/query.utils');
-// TODO put de record
 
 const post = async(req, res) => {
     log.post("record")
     // TODO acum in Wallet
     if(req.body && req.body.amount && req.body.category) {
-        log.content(req.body, req.params.id)
-        let record = new Record({ owner: req.params.id, ...req.body })
+        log.content(req.body, req.id)
+        let record = new Record({ owner: req.id, ...req.body })
         log.debug("RECORD", record)
 
         const msg = record.isOut? await verifyAndUpdateLimit(record) : null
+        if(record.wallet) await updateWallet(record)
 
         try {
             await record.save()
@@ -35,10 +35,10 @@ const post = async(req, res) => {
 
 const get = async(req, res) => {
     log.get("records")
-    log.content(req.body, req.params.id)
+    log.content(req.body, req.id)
     const page = req.query.page ? Number(req.query.page) : 1
 
-    let query = { 'owner': req.params.id}
+    let query = { 'owner': req.id}
     if(req.body.isOut != undefined) query['isOut'] = req.body.isOut
     query =  dateBetween(query, req.body.dateFrom, req.body.dateUntil)
     query = fieldInGroup(query, req.body.categories, "category")
@@ -52,10 +52,10 @@ const get = async(req, res) => {
 const balance = async(req, res) => {
     // Para balance informativo
     log.get("balance")
-    log.content(req.query, req.params)
+    log.content(req.query, req.id)
 
-    let actualQuery = balanceInPeriod(req.params.id, req.query.dateFrom, req.query.dateUntil)
-    let historicalQuery = balanceInPeriod(req.params.id)
+    let actualQuery = balanceInPeriod(req.id, req.query.dateFrom, req.query.dateUntil)
+    let historicalQuery = balanceInPeriod(req.id)
     try {
         const thisMonths = await Record.aggregate(actualQuery)
         const historical = await Record.aggregate(historicalQuery)
@@ -76,12 +76,36 @@ const balance = async(req, res) => {
     }
 }
 
+const update = async(req, res) => {
+    log.put("record")
+    if(req.id && req.params.record && req.body) {
+        try {
+            let record = await Record.findByIdAndUpdate(req.params.record, 
+                { wallet: req.body.wallet, tags: req.body.tags },
+                { new: true })
+            
+            log.debug("RECORD UPDATED", record)
+            res.status(200).json({
+                message: "Record updated successfully",
+                data: record
+            });
+        } catch (e) {
+            log.error(err)
+            res.status(500).json({
+                message: "Internal Server Error on Updating",
+                code: err.code,
+                error: err
+            });
+        }
+    } else return res.status(400).json({ message: "Fields required are null" })
+}
+
 const summary = async(req, res) => {
     // Para grafico de tortas
     log.get("summary")
-    log.content(req.query, req.params)
+    log.content(req.query, req.id)
    
-   let query = sumInPeriod(req.params.id, req.params.groupBy, req.query.filter, req.query.dateFrom, req.query.dateUntil)
+   let query = sumInPeriod(req.id, req.params.groupBy, req.query.filter, req.query.dateFrom, req.query.dateUntil)
    try {
         const aggregated = await Record.aggregate(query)
         log.debug("RECORDS AGGREGATED", aggregated.length)
@@ -103,7 +127,7 @@ const summary = async(req, res) => {
 const historical = async(req, res) => {
     // Para grafico de lineas o barras
     log.get("historical")
-    log.content(req.query, req.params)
+    log.content(req.query, req.id)
 
     let elToObj = (el) => {
         return {
@@ -114,7 +138,7 @@ const historical = async(req, res) => {
         }
     }
 
-    let query = calcHistorical(req.params.id, req.params.groupBy, req.query.dateFrom, req.query.dateUntil)
+    let query = calcHistorical(req.id, req.params.groupBy, req.query.dateFrom, req.query.dateUntil)
     try {
         const aggregated = await Record.aggregate(query)
         const response = {}
@@ -138,4 +162,4 @@ const historical = async(req, res) => {
     }
 }
 
-module.exports = { post, get, balance, summary, historical }
+module.exports = { post, get, balance, summary, historical, update }

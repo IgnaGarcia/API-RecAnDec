@@ -22,4 +22,8 @@ const getListOf = async(res, Model, telegramId, modelName) => {
     find(res, Model, query, modelName)
 }
 
-module.exports = { getUserFromTgId, getListOf }
+const generateToken = () => {
+    return Math.random().toString(36).substring(2, 9)
+}
+
+module.exports = { getUserFromTgId, getListOf, generateToken }

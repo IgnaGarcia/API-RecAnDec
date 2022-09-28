@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const app = require('./app');
+const app = require('./api/index');
 const log = require('./utils/log.utils')
 require('dotenv').config();
 
