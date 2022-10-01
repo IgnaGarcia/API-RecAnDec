@@ -30,9 +30,7 @@ const get = async(req, res) => {
 
 const erase = async(req, res) => {
     log.delete("command")
-    if(req.id && req.params.command) {
-        await remove(res, Command, req.params.command, "Command")
-    } else return res.status(400).json({ message: "Fields required are null"})
+    await remove(res, Command, req.params.command, "Command")
 }
 
 module.exports = { post, get, erase }

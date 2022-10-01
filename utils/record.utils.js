@@ -80,9 +80,9 @@ const getAcumOfPeriod = (owner, category, month, year) => {
                 }
             ]).exec()
             log.debug("LIMIT STATUS", JSON.stringify(records[0]))
-            if(records || records.length == 0) resolve(0)
-            else if(records[0]._id.month != month && records[0]._id.year != year) resolve(0)
-            else resolve(records[0].acum)
+            if(!records || records.length == 0) resolve(0)
+            else if(records[0]["_id"].month == month && records[0]["_id"].year == year) resolve(records[0].acum)
+            else resolve(0)
         } catch(e) {
             log.error(e)
             reject(e)

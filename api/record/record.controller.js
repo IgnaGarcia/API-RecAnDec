@@ -6,7 +6,6 @@ const { dateBetween, fieldInGroup, sumInPeriod, balanceInPeriod, calcHistorical 
 
 const post = async(req, res) => {
     log.post("record")
-    // TODO acum in Wallet
     if(req.body && req.body.amount && req.body.category) {
         log.content(req.body, req.id)
         let record = new Record({ owner: req.id, ...req.body })
@@ -67,8 +66,8 @@ const balance = async(req, res) => {
             data: thisMonths
         })
     } catch (err) {
-            log.error(err)
-            res.status(500).json({
+        log.error(err)
+        res.status(500).json({
             message: "Internal Server Error on Aggregating",
             code: err.code,
             error: err
@@ -90,11 +89,11 @@ const update = async(req, res) => {
                 data: record
             });
         } catch (e) {
-            log.error(err)
+            log.error(e)
             res.status(500).json({
                 message: "Internal Server Error on Updating",
-                code: err.code,
-                error: err
+                code: e.code,
+                error: e
             });
         }
     } else return res.status(400).json({ message: "Fields required are null" })
@@ -106,6 +105,7 @@ const summary = async(req, res) => {
     log.content(req.query, req.id)
    
    let query = sumInPeriod(req.id, req.params.groupBy, req.query.filter, req.query.dateFrom, req.query.dateUntil)
+   if(!query) return res.status(400).json({ message: "Fields required are null" })
    try {
         const aggregated = await Record.aggregate(query)
         log.debug("RECORDS AGGREGATED", aggregated.length)
@@ -138,7 +138,8 @@ const historical = async(req, res) => {
         }
     }
 
-    let query = calcHistorical(req.id, req.params.groupBy, req.query.dateFrom, req.query.dateUntil)
+    let query = calcHistorical(req.id, req.params.groupBy, req.query.filter)
+    if(!query) return res.status(400).json({ message: "Fields required are null" })
     try {
         const aggregated = await Record.aggregate(query)
         const response = {}

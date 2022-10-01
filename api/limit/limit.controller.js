@@ -14,7 +14,7 @@ const post = async(req, res) => {
             year: today.getFullYear(),
             ...req.body })
 
-        limit.acum = await getAcumOfPeriod(limit.owner, limit.category, limit.month, limit.year)
+        limit.acum = await getAcumOfPeriod(limit.owner, limit.category, limit.month-1, limit.year)
         await create(res, limit, "Limit")
     } else return res.status(400).json({ message: "Fields required are null" })
 }
@@ -51,11 +51,11 @@ const update = async(req, res) => {
                 data: limit
             });
         } catch (e) {
-            log.error(err)
+            log.error(e)
             res.status(500).json({
                 message: "Internal Server Error on Updating",
-                code: err.code,
-                error: err
+                code: e.code,
+                error: e
             });
         }
     } else return res.status(400).json({ message: "Fields required are null" })
@@ -63,9 +63,7 @@ const update = async(req, res) => {
 
 const erase = async(req, res) => {
     log.delete("limit")
-    if(req.id && req.params.limit) {
-        await remove(res, Limit, req.params.limit, "Limit")
-    } else return res.status(400).json({ message: "Fields required are null" })
+    await remove(res, Limit, req.params.limit, "Limit")
 }
 
 module.exports = { post, get, update, erase }
