@@ -94,8 +94,7 @@ const getWithPaging = async(Model, query, order={ date: -1 }, page=1, size=20) =
         .skip((page-1)*size)
         .exec()
 
-    const count = await Model.count(query)
-    const maxPage = Math.ceil(count / size)
+    const maxPage = Math.ceil(await Model.count(query) / size)
 
     return {
         data: response,

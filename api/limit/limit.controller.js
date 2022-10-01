@@ -14,7 +14,7 @@ const post = async(req, res) => {
             year: today.getFullYear(),
             ...req.body })
 
-        limit.acum = await getAcumOfPeriod(limit.owner, limit.category, limit.month, limit.year)
+        limit.acum = await getAcumOfPeriod(limit.owner, limit.category, limit.month-1, limit.year)
         await create(res, limit, "Limit")
     } else return res.status(400).json({ message: "Fields required are null" })
 }

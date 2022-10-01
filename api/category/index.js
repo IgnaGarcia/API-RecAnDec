@@ -5,4 +5,5 @@ const { verify } = require('../../utils/auth.utils');
 router.post('/', verify, categoryController.post);
 router.get('/', verify, categoryController.get);
 
+
 module.exports = router;
