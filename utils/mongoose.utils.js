@@ -22,11 +22,11 @@ const create = async(res, instance, modelName) => {
     }
 }
 
-const find = async(res, Model, query, modelName) => {
+const find = async(res, Model, query, modelName, order={}) => {
     log.query(query)
 
     try {
-        const response = await Model.find(query)
+        const response = await Model.find(query).sort(order)
 
         log.debug("FINDED", response.length)
         return res.status(200).json({

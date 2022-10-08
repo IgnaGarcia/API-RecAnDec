@@ -1,6 +1,6 @@
 const Tag = require('./tag.model');
 const log = require('../../utils/log.utils')
-const { create, findWithPaging } = require('../../utils/mongoose.utils');
+const { create, find } = require('../../utils/mongoose.utils');
 
 const post = async(req, res) => {
     log.post("tag")
@@ -15,10 +15,9 @@ const post = async(req, res) => {
 
 const get = async(req, res) => {
     log.get("tags")
-    const page = req.query.page ? Number(req.query.page) : 1
 
     let query = { 'owner': req.id }
-    await findWithPaging(res, Tag, query, "Tags", { createDate: -1}, page)
+    await find(res, Tag, query, "Tags", { createDate: -1})
 }
 
 module.exports = { post, get }

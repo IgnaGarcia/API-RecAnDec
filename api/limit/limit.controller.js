@@ -1,7 +1,7 @@
 const Limit = require('./limit.model');
 const log = require('../../utils/log.utils')
 const { getAcumOfPeriod } = require('../../utils/record.utils');
-const { findWithPaging, create, remove } = require('../../utils/mongoose.utils');
+const { find, create, remove } = require('../../utils/mongoose.utils');
 
 const post = async(req, res) => {
     log.post("limit")
@@ -21,10 +21,9 @@ const post = async(req, res) => {
 
 const get = async(req, res) => {
     log.get("limits")
-    const page = req.query.page ? Number(req.query.page) : 1
 
     let query = { 'owner': req.id }
-    await findWithPaging(res, Limit, query, "Limits", { year: -1, month: -1 }, page)
+    await find(res, Limit, query, "Limits", { year: -1, month: -1 })
 }
 
 const update = async(req, res) => {
