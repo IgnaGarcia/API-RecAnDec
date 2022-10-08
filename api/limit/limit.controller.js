@@ -23,7 +23,7 @@ const get = async(req, res) => {
     log.get("limits")
 
     let query = { 'owner': req.id }
-    await find(res, Limit, query, "Limits", { year: -1, month: -1 })
+    await find(res, Limit, query, "Limits", { year: -1, month: -1 }, 'category')
 }
 
 const update = async(req, res) => {
