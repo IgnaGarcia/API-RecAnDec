@@ -9,7 +9,11 @@ const UserSchema = Schema({
     name: String,
     telegramId: String,
     inCommand: {type: Schema.Types.ObjectId, ref: 'commands'},
-    outCommand: {type: Schema.Types.ObjectId, ref: 'commands'}
+    outCommand: {type: Schema.Types.ObjectId, ref: 'commands'},
+    createDate: {
+        type: Date,
+        default: Date.now
+    }
 });
 
 UserSchema.methods.encryptPassword = async (password) => {
