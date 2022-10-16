@@ -38,14 +38,14 @@ const get = async(req, res) => {
     const page = req.query.page ? Number(req.query.page) : 1
 
     let query = { 'owner': req.id}
-    if(req.body.isOut != undefined) query['isOut'] = req.body.isOut
+    if(req.query.isOut != undefined) query['isOut'] = req.query.isOut === 'true'
     query =  dateBetween(query, req.body.dateFrom, req.body.dateUntil)
     query = fieldInGroup(query, req.body.categories, "category")
     query = fieldInGroup(query, req.body.tags, "tags")
     query = fieldInGroup(query, req.body.wallets, "wallet")
     log.debug("QUERY", query)
 
-    await findWithPaging(res, Record, query, "Records", { date: -1 }, page)
+    await findWithPaging(res, Record, query, "Records", { date: -1 }, page, 40)
 }
 
 const balance = async(req, res) => {
