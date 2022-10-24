@@ -16,7 +16,7 @@ const post = async(req, res) => {
 const get = async(req, res) => {
     log.get("tags")
 
-    let query = { 'owner': req.id }
+    let query = { $or: [{ 'owner': req.id }, { 'owner': null }] }
     await find(res, Tag, query, "Tags", { createDate: -1})
 }
 

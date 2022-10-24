@@ -73,7 +73,7 @@ const login = async(req, res) => {
 
             res.status(500).json({ 
                 message: "Internal Server Error On Finding", 
-                code: err.code,
+                code: 500,
                 error: err 
             })
         };

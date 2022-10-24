@@ -25,7 +25,27 @@ const post = async(req, res) => {
 const get = async(req, res) => {
     log.get("command")
     let query = { 'owner': req.id }
-    await find(res, Command, query, "Commands")
+    try {
+        const response = await Command.find(query)
+            .populate('category')
+            .populate('wallet')
+            .populate('tags')
+
+        log.debug("FINDED", response.length)
+        return res.status(200).json({
+            message: `Commands finded successfully`,
+            data: response
+        });
+
+    } catch (err) {
+        log.error(err)
+
+        return res.status(500).json({
+            message: "Internal Server Error on Finding",
+            code: err.code,
+            error: err
+        });
+    }
 }
 
 const erase = async(req, res) => {

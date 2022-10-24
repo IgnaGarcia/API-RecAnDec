@@ -77,12 +77,12 @@ const remove = async(res, Model, id, modelName) => {
         });
 
     } catch (e) {
-        log.error(err)
+        log.error(e)
 
         res.status(500).json({
             message: "Internal Server Error on Deleting",
-            code: err.code,
-            error: err
+            code: e.code,
+            error: e
         });
     }
 }

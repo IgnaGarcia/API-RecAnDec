@@ -5,7 +5,7 @@ const { create, find } = require('../../utils/mongoose.utils');
 const post = async(req, res) => {
     log.post("wallet")
 
-    if(req.body && req.body.label && req.body.alias && req.body.acum) {
+    if(req.body && req.body.label && req.body.alias && (req.body.acum != undefined && req.body.acum != null)) {
         log.content(req.body, req.id)
         let wallet = new Wallet({ owner: req.id, ...req.body })
 
