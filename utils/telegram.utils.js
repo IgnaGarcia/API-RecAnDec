@@ -7,7 +7,7 @@ const getUserFromTgId = async(telegramId) => {
     return user
 }
 
-const getListOf = async(res, Model, telegramId, modelName) => {
+const getListOf = async(res, Model, telegramId, modelName, populate) => {
     log.get(`${modelName} from Telegram`)
     
     let owner = await getUserFromTgId(telegramId)
@@ -19,7 +19,7 @@ const getListOf = async(res, Model, telegramId, modelName) => {
     }
     let query = { $or: [{ 'owner': owner }, { 'owner': null }] }
     
-    find(res, Model, query, modelName)
+    find(res, Model, query, modelName, {}, populate)
 }
 
 const generateToken = () => {

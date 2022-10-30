@@ -2,6 +2,7 @@ const Category = require('../category/category.model');
 const Wallet = require('../wallet/wallet.model');
 const Tag = require('../tag/tag.model');
 const User = require("../user/user.model");
+const Limit = require("../limit/limit.model");
 const Command = require('../command/command.model');
 const log = require('../../utils/log.utils')
 const { getListOf } = require("../../utils/telegram.utils");
@@ -13,7 +14,7 @@ const sync = async(req, res) => {
         log.content(req.body, req.params.telegramId)
 
         let user = await User.findOne({ "telegramId": req.body.securityCode, "email": req.body.email })
-        if(user) {
+        if(user && user.telegramId[0] == "_") {
             log.debug("USER FINDED", JSON.stringify(user))
             user.telegramId = req.params.telegramId
             await user.save()
@@ -43,4 +44,8 @@ const tags = async(req, res) => {
     await getListOf(res, Tag, req.params.telegramId, "Tags")
 }
 
-module.exports = { sync, wallets, categories, tags, commands };
+const limits = async(req, res) => {
+    await getListOf(res, Limit, req.params.telegramId, "Limits", "category")
+}
+
+module.exports = { sync, wallets, categories, tags, commands, limits };
