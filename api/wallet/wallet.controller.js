@@ -17,7 +17,7 @@ const get = async(req, res) => {
     log.get("wallets")
 
     let query = { 'owner': req.id }
-    await find(res, Wallet, query, "Wallets", { createDate: -1 })
+    await find(res, Wallet, query, "Wallets", { createDate: -1, label: 1  })
 }
 
 module.exports = { post, get }
