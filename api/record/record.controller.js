@@ -7,8 +7,9 @@ const { dateBetween, fieldInGroup, sumInPeriod, balanceInPeriod, calcHistorical 
 const post = async(req, res) => {
     log.post("record")
     if(req.body && req.body.amount && req.body.category) {
-        log.content(req.body, req.id)
-        let record = new Record({ owner: req.id, ...req.body })
+        userId = req.id? req.id : req.params.id
+        log.content(req.body, userId)
+        let record = new Record({ owner: userId, ...req.body })
         log.debug("RECORD", record)
 
         const msg = record.isOut? await verifyAndUpdateLimit(record) : null

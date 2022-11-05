@@ -3,6 +3,7 @@ const recordController = require('./record.controller');
 const { verify } = require('../../utils/auth.utils')
 
 router.post('/', verify, recordController.post);
+router.post('/:id', recordController.post);
 router.get('/', verify, recordController.get);
 router.put('/:record', verify, recordController.update);
 

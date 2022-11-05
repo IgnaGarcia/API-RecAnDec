@@ -32,6 +32,19 @@ const commands = async(req, res) => {
     await find(res, Command, query, "Commands")
 }
 
+const user = async(req, res) => {
+    log.debug("GET USER", req.params.telegramId)
+
+    let user = await User.findOne({ "telegramId": req.params.telegramId })
+    if(user) {
+        log.debug("USER FINDED", JSON.stringify(user))
+        return res.status(200).json({
+            message: "User finded with telegram",
+            data: user
+        })
+    } else return res.status(404).json({ message: "Invalid telegram id" })
+}
+
 const wallets = async(req, res) => {
     await getListOf(res, Wallet, req.params.telegramId, "Wallets")
 }
@@ -48,4 +61,4 @@ const limits = async(req, res) => {
     await getListOf(res, Limit, req.params.telegramId, "Limits", "category")
 }
 
-module.exports = { sync, wallets, categories, tags, commands, limits };
+module.exports = { sync, wallets, categories, tags, commands, limits, user };
