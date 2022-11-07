@@ -28,8 +28,9 @@ describe('POST /limits', () => {
     })
     it('Should create new limit with acum', async () => {
         mockingoose(Limit).toReturn(limitsMock[0], "save")
+        let today = new Date()
         mockingoose(Record).toReturn([{
-            "_id": { "month": 9, "year": 2022 },
+            "_id": { "month": today.getMonth(), "year": today.getFullYear() },
             "acum": 100
         }], "aggregate")
         const req = httpMocks.createRequest({
@@ -82,8 +83,6 @@ describe('GET /limits', () => {
         const json = res._getJSONData()
         expect(res.statusCode).toEqual(200)
         expect(json.data.length).toEqual(limitsMock.length)
-        expect(json.paging.previus).toEqual(null)
-        expect(json.paging.next).toEqual(null)
     })
     it('Should GET Limit list with pagging', async() => {
         mockingoose(Limit).toReturn([], 'find')
@@ -99,8 +98,6 @@ describe('GET /limits', () => {
         const json = res._getJSONData()
         expect(res.statusCode).toEqual(200)
         expect(json.data.length).toEqual(0)
-        expect(json.paging.previus).toEqual(1)
-        expect(json.paging.next).toEqual(null)
     })
 })
 

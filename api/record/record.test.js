@@ -23,8 +23,8 @@ describe('POST /record', () => {
 
         const json = res._getJSONData()
         expect(res.statusCode).toEqual(201)
-        expect(json.data.amount).toEqual(recordsMock[0].amount)
-        expect(json.data.category).toEqual(recordsMock[0].category)
+        expect(json.data.record.amount).toEqual(recordsMock[0].amount)
+        expect(json.data.record.category).toEqual(recordsMock[0].category)
     })
     it('Should fail when save', async () => {
         mockingoose(Record).toReturn(new Error("some err"), "save")

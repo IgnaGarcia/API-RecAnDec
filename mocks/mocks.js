@@ -3,7 +3,7 @@ userMock = {
     "email": "gnachoxp@gmail.com",
     "password": "$2b$12$zYXkE639r0L.JlYVqYM1pODUXeknllVEB0YqZIhhX8HINF8yKpHXS",
     "name": "Igna Garcia",
-    "telegramId": "982840555"
+    "telegramId": "_982840555"
 }
 
 walletsMock = [

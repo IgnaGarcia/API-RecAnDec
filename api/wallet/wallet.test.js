@@ -66,27 +66,5 @@ describe('GET /wallets', () => {
         const json = res._getJSONData()
         expect(res.statusCode).toEqual(200)
         expect(json.data.length).toEqual(walletsMock.length)
-        expect(json.paging.previus).toEqual(null)
-        expect(json.paging.next).toEqual(null)
-    })
-    it('Should GET Wallet list with pagging', async() => {
-        // Mocking
-        mockingoose(Wallet).toReturn([], 'find')
-        mockingoose(Wallet).toReturn(3, 'count')
-        const req = httpMocks.createRequest({
-            query: { "page": 2 },
-            id: walletsMock[0].owner
-        })
-        const res = httpMocks.createResponse()
-
-        // Executing
-        await get(req, res)
-
-        // Testing
-        const json = res._getJSONData()
-        expect(res.statusCode).toEqual(200)
-        expect(json.data.length).toEqual(0)
-        expect(json.paging.previus).toEqual(1)
-        expect(json.paging.next).toEqual(null)
     })
 })
