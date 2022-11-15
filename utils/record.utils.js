@@ -23,15 +23,14 @@ const verifyAndUpdateLimit = (rec) => {
             }
             log.debug("LIMIT", limit)
 
-            const records = await Record.find({ $expr: {
+            const records = await Record.find({
                 $and: [
-                    { "owner": rec.owner},
-                    { "category": rec.category},
-                    { "isOut": true},
-                    { "$eq": [ { "$month": "$date" }, limit.month ]},
-                    { "$eq": [ { "$year": "$date" }, limit.year ] }
+                    { "owner": rec.owner },
+                    { "category": rec.category },
+                    { "isOut": true },
+                    { "date": { "$gt": `${limit.year}-${limit.month}-01` } },
                 ]
-            }}).exec()
+            })
             log.debug("RECORDS", records.length)
 
             let acum = records.reduce((prev, curr) => prev + curr.amount, 0)

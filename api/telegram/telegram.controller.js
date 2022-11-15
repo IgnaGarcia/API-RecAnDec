@@ -15,13 +15,28 @@ const sync = async(req, res) => {
 
         let user = await User.findOne({ "telegramId": req.body.securityCode, "email": req.body.email })
         if(user && user.telegramId[0] == "_") {
-            log.debug("USER FINDED", JSON.stringify(user))
-            user.telegramId = req.params.telegramId
-            await user.save()
-            return res.status(200).json({
-                message: "User syncronized with telegram",
-                data: user
-            })
+            try {
+                log.debug("USER FINDED", JSON.stringify(user))
+                user.telegramId = req.params.telegramId
+                await user.save()
+                return res.status(200).json({
+                    message: "User syncronized with telegram",
+                    data: user
+                })
+            } catch(err) {
+                return (err.code == 11000) ? res.status(406).json({
+                    message: "Duplicate Key Error",
+                    code: err.code,
+                    error: err
+                }) : "Internal Server Error on Saving"
+                log.error(err)
+        
+                return res.status(500).json({
+                    message,
+                    code: err.code,
+                    error: err
+                });
+            }
         } else return res.status(404).json({ message: "Invalid email or security code" })
     } else return res.status(400).json({ message: "Fields required are null" })
 }

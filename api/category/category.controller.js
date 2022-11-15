@@ -9,8 +9,13 @@ const post = async(req, res) => {
         log.content(req.body, req.id)
         let category = new Category({ owner: req.id, ...req.body })
     
-        let exists = await Category.find({ $or: [{ 'owner': req.id }, { 'owner': null }] })
-        if(exists) {
+        let exists = await Category.find({ $or: [
+            { 'owner': req.id, 'label': category.label }, 
+            { 'owner': req.id, 'alias': category.alias },
+            { 'owner': null, 'label': category.label },
+            { 'owner': null, 'alias': category.alias }
+        ] })
+        if(exists.length) {
             return res.status(500).json({
                 message: "Duplicate Key Error",
                 code: 11000,
