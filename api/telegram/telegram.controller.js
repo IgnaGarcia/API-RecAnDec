@@ -43,8 +43,12 @@ const sync = async(req, res) => {
 
 const commands = async(req, res) => {
     log.get("command from telegram")
-    let query = { 'telegramId': req.params.telegramId }
-    await find(res, Command, query, "Commands")
+    let user = await User.findOne({ "telegramId": req.params.telegramId })
+    if(user) {
+        log.debug("USER FINDED", JSON.stringify(user))
+        let query = { 'owner': user._id }
+        await find(res, Command, query, "Commands")
+    } else return res.status(404).json({ message: "Invalid telegram id" })
 }
 
 const user = async(req, res) => {
